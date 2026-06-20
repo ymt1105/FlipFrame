@@ -3,19 +3,21 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { retrieveWFM } from './resources/retrieveWFM.js';
 import { readTextFile } from './resources/readTextFile.js';
 import { destructureOrders } from './resources/destructureOrders.js';
-
+import { sleep } from './resources/sleep.js';
 const s3Client = new S3Client({ region: "ap-southeast-2" });
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const test_data = await readTextFile('itemslugs.json');
+// const test_data = await readTextFile('fullslug.json');
+
 
 async function retrieveItemOrders() {
     for (const [name, details] of Object.entries(test_data)) {
         const slug = details[0];
         const orders = await retrieveWFM(slug);
         const simplifiedOrders = await destructureOrders(orders);
-        uploadToAWS(name, simplifiedOrders);
-        await sleep(1000);
+        // uploadToAWS(name, simplifiedOrders);
+        console.log(simplifiedOrders);
+        await sleep(400);
     }
 }
 

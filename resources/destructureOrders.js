@@ -1,5 +1,13 @@
 export const destructureOrders = async (ordersJson) => {
-    const result = ordersJson.data.filter(item => item.user.status == 'ingame' || item.user.status == 'online').map(({ platinum, quantity, type, user }) => ({
+    // const result = ordersJson.data.filter(item => item.user.status == 'ingame' || item.user.status == 'online').map(({ platinum, quantity, type, user }) => ({
+    //   platinum: platinum,
+    //   quantity: quantity,
+    //   type : type,
+    //   lastSeen : user.lastSeen,
+    //   status : user.status
+    // }));
+
+    const result = ordersJson.data.map(({ platinum, quantity, type, user }) => ({
       platinum: platinum,
       quantity: quantity,
       type : type,
@@ -7,7 +15,7 @@ export const destructureOrders = async (ordersJson) => {
       status : user.status
     }));
     const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 0.1);
 
     const filteredResults = result.filter(item => {
       const lastSeenDate = new Date(item.lastSeen);
