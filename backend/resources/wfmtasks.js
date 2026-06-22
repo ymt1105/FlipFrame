@@ -86,7 +86,7 @@ async function getOrderID(itemName){
         const curritemID = order.itemId
         const curritemName = await getItemName(curritemID);
         if (curritemName == itemName) {
-            return order;
+            return order.id;
         }
     }
 
@@ -117,7 +117,6 @@ async function editOrder(payload, id){
         });
         const responseJson = await response.json()
         if (!response.ok) {
-            // Throw an error so the 'catch' block handles it
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }
 
