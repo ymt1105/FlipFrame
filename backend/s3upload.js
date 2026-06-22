@@ -38,6 +38,7 @@ async function uploadToAWS(name, payload) {
         console.error("Error uploading file", err);
     }
 }
+
 retrieveItemOrders();
 
 

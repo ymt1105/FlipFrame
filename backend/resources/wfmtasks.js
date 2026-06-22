@@ -11,39 +11,38 @@ const baseURL = "https://api.warframe.market/v2"
 
 const jwt = process.env.JWT;
 const user = process.env.USER;
-
 const headers = {
     "Authorization": `Bearer ${jwt}`, 
     "Content-Type": "application/json" 
 };
 
-async function getAllOrders(user){
+async function getAllOrders(){
     const modifiedURL = `${baseURL}/orders/user/${user}`;
-    
-
-    const response = await fetch(modifiedURL);
+    const response = await fetch(modifiedURL, headers);
     const responseJson = await response.json();        
 
     return responseJson;
 }
 
-async function deleteAllOrders(user){
-    const headers = {
-        "Authorization": `Bearer ${jwt}`
-    }
-
-    const allUserOrders = await getAllOrders(jwt, user);
+async function deleteAllOrders(){
+    const allUserOrders = await getAllOrders();
+    console.log(allUserOrders);
     for (const order of Object.values(allUserOrders.data)){
         const orderid = order.id;
-        const modifiedURL = `${baseURL}/order/${orderid}`
-        const response = await fetch(modifiedURL, 
-            {
-                method : 'DELETE', 
-                headers : headers
-            });
-        const responseJson = await response.json();        
+        deleteSingleOrder(orderid);
         await sleep(400);
     }    
+
+}
+
+async function deleteSingleOrder(orderID){
+    const modifiedURL = `${baseURL}/order/${orderID}`;
+    const response = await fetch(modifiedURL, 
+    {
+        method : 'DELETE', 
+        headers : headers
+    });
+    const responseJson = await response.json();  
 
 }
 
@@ -64,7 +63,8 @@ async function getItemID(itemSlug){
     const itemID = responseJson.data.id;
     return itemID;
 }
-async function addBuyOrder(payload){
+
+async function addOrder(payload){
     const modifiedURL = `${baseURL}/order`;
 
     const response = await fetch(modifiedURL, 
@@ -78,8 +78,14 @@ async function addBuyOrder(payload){
     
 }
 
+async function editOrder(payload){
 
-async function getJWT(user){
+}
+
+
+
+
+async function getJWT(){
     const email = process.env.WF_EMAIL;
     const password = process.env.WF_PASS;
     let rep = await fetch("https://api.warframe.market/v1/auth/signin", {
@@ -102,7 +108,13 @@ async function getJWT(user){
     console.log(token)
     return token;
 }
-// test adding orders
-const itemID = await getItemID("rhino_prime_set");
-const payload = await createPayload(itemID, "buy", 100, 1);
-addBuyOrder(payload);
+
+
+// // test adding orders
+// const itemID = await getItemID("rhino_prime_set");
+// const payload = await createPayload(itemID, "buy", 100, 1);
+// await addOrder(payload);
+
+
+// //test deleting all orders
+// await deleteAllOrders();
