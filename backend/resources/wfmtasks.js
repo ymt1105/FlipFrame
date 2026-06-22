@@ -56,6 +56,16 @@ async function createPayload(item_id, type, buy_price, quantity){
     } 
     return payload;
 }
+
+async function createEditPayload(platinum, quantity){
+    const payload = {
+        "platinum": platinum,
+	    "quantity": quantity,
+        "visible": true
+    } 
+    return payload;
+}
+
 async function getItemID(itemSlug){
     const modifiedURL = `${baseURL}/item/${itemSlug}`;
     const response = await fetch(modifiedURL)
@@ -63,7 +73,24 @@ async function getItemID(itemSlug){
     const itemID = responseJson.data.id;
     return itemID;
 }
+async function getItemName(itemID){
+    const modifiedURL = `${baseURL}/itemId/${itemID}`;
+    const response = await fetch(modifiedURL);
+    const responseJson = await response.json()
+    const slug = responseJson.data.slug;
+    return slug;
+}
+async function getOrderID(itemName){
+    const allOrders = await getAllOrders();
+    for (const order of Object.values(allOrders.data)){
+        const curritemID = order.itemId
+        const curritemName = await getItemName(curritemID);
+        if (curritemName == itemName) {
+            return order;
+        }
+    }
 
+}
 async function addOrder(payload){
     const modifiedURL = `${baseURL}/order`;
 
@@ -74,12 +101,31 @@ async function addOrder(payload){
         body: JSON.stringify(payload)
     });
     const responseJson = await response.json()
-    console.log(responseJson);
+    console.log("Successfully added order");
     
 }
 
-async function editOrder(payload){
+async function editOrder(payload, id){
+    try {
+        const modifiedURL = `${baseURL}/order/${id}`;
 
+        const response = await fetch(modifiedURL, 
+        {
+            method: 'PATCH',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+        const responseJson = await response.json()
+        if (!response.ok) {
+            // Throw an error so the 'catch' block handles it
+            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
+        }
+
+        console.log("Success:", responseJson);
+    } catch (err) {
+        console.error("Operation failed:", err.message);    
+    }
+    
 }
 
 
@@ -108,13 +154,19 @@ async function getJWT(){
     console.log(token)
     return token;
 }
+const test_slug = "rhino_prime_set";
 
 
 // // test adding orders
-// const itemID = await getItemID("rhino_prime_set");
+// const itemID = await getItemID(test_slug);
 // const payload = await createPayload(itemID, "buy", 100, 1);
 // await addOrder(payload);
 
+// // test updating orders
+const orderID = await getOrderID(test_slug);
+const itemID = await getItemID(test_slug);
+const payload = await createEditPayload(50, 1);
+await editOrder(payload, orderID);
 
 // //test deleting all orders
 // await deleteAllOrders();
