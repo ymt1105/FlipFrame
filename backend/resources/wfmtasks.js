@@ -7,16 +7,16 @@ import { sleep } from './sleep.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });
 
-const baseURL = "https://api.warframe.market/v2"
+export const baseURL = "https://api.warframe.market/v2"
 
-const jwt = process.env.JWT;
-const user = process.env.USER;
-const headers = {
+export const jwt = process.env.JWT;
+export const user = process.env.USER;
+export const headers = {
     "Authorization": `Bearer ${jwt}`, 
     "Content-Type": "application/json" 
 };
 
-async function getAllOrders(){
+export async function getAllOrders(){
     const modifiedURL = `${baseURL}/orders/user/${user}`;
     const response = await fetch(modifiedURL, headers);
     const responseJson = await response.json();        
@@ -24,7 +24,7 @@ async function getAllOrders(){
     return responseJson;
 }
 
-async function deleteAllOrders(){
+export async function deleteAllOrders(){
     const allUserOrders = await getAllOrders();
     console.log(allUserOrders);
     for (const order of Object.values(allUserOrders.data)){
@@ -35,7 +35,7 @@ async function deleteAllOrders(){
 
 }
 
-async function deleteSingleOrder(orderID){
+export async function deleteSingleOrder(orderID){
     const modifiedURL = `${baseURL}/order/${orderID}`;
     const response = await fetch(modifiedURL, 
     {
@@ -46,7 +46,7 @@ async function deleteSingleOrder(orderID){
 
 }
 
-async function createPayload(item_id, type, buy_price, quantity){
+export async function createPayload(item_id, type, buy_price, quantity){
     const payload = {
         "itemId": item_id, 
         "type": type, 
@@ -57,7 +57,7 @@ async function createPayload(item_id, type, buy_price, quantity){
     return payload;
 }
 
-async function createEditPayload(platinum, quantity){
+export async function createEditPayload(platinum, quantity){
     const payload = {
         "platinum": platinum,
 	    "quantity": quantity,
@@ -66,21 +66,21 @@ async function createEditPayload(platinum, quantity){
     return payload;
 }
 
-async function getItemID(itemSlug){
+export async function getItemID(itemSlug){
     const modifiedURL = `${baseURL}/item/${itemSlug}`;
     const response = await fetch(modifiedURL)
     const responseJson = await response.json()
     const itemID = responseJson.data.id;
     return itemID;
 }
-async function getItemName(itemID){
+export async function getItemName(itemID){
     const modifiedURL = `${baseURL}/itemId/${itemID}`;
     const response = await fetch(modifiedURL);
     const responseJson = await response.json()
     const slug = responseJson.data.slug;
     return slug;
 }
-async function getOrderID(itemName){
+export async function getOrderID(itemName){
     const allOrders = await getAllOrders();
     for (const order of Object.values(allOrders.data)){
         const curritemID = order.itemId
@@ -91,7 +91,7 @@ async function getOrderID(itemName){
     }
 
 }
-async function addOrder(payload){
+export async function addOrder(payload){
     const modifiedURL = `${baseURL}/order`;
 
     const response = await fetch(modifiedURL, 
@@ -105,7 +105,7 @@ async function addOrder(payload){
     
 }
 
-async function editOrder(payload, id){
+export async function editOrder(payload, id){
     try {
         const modifiedURL = `${baseURL}/order/${id}`;
 
@@ -130,7 +130,7 @@ async function editOrder(payload, id){
 
 
 
-async function getJWT(){
+export async function getJWT(){
     const email = process.env.WF_EMAIL;
     const password = process.env.WF_PASS;
     let rep = await fetch("https://api.warframe.market/v1/auth/signin", {
@@ -162,10 +162,10 @@ const test_slug = "rhino_prime_set";
 // await addOrder(payload);
 
 // // test updating orders
-const orderID = await getOrderID(test_slug);
-const itemID = await getItemID(test_slug);
-const payload = await createEditPayload(50, 1);
-await editOrder(payload, orderID);
+// const orderID = await getOrderID(test_slug);
+// const itemID = await getItemID(test_slug);
+// const payload = await createEditPayload(50, 1);
+// await editOrder(payload, orderID);
 
-// //test deleting all orders
+// // //test deleting all orders
 // await deleteAllOrders();
