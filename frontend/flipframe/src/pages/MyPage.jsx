@@ -8,15 +8,13 @@ export const MyPage = () => {
 
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
-    
-    console.log("Items:", items);
     return (
         <div>
         <h1>Product List</h1>
         <ul>
-            {items?.map((item) => (
+            {items?.data?.map((item) => (
             <li key={item.id}>
-                {item.name} - ${item.price}
+                {item.type} - ${item.platinum}
             </li>
             ))}
         </ul>
