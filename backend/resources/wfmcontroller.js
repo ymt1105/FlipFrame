@@ -41,7 +41,7 @@ export async function newOrder (req, res) {
 export async function patchOrder (req, res) {
     try {
         const id = req.params.id;
-        const { platinum, quantity, visible};
+        const { platinum, quantity, visible} = req.body;
         const payload = await task.createEditPayload(platinum, quantity, visible);
         const data = await task.editOrder(payload, id);
         res.json(data);
