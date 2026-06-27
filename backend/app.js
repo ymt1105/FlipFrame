@@ -3,9 +3,10 @@ import * as control from "./resources/wfmcontroller.js"
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
 const router = express.Router();
+
 app.use(express.json());
+app.use(cors());
 app.use(express.static('public'));
 
 router
@@ -19,6 +20,9 @@ router
     .delete(control.deleteSingle)
     .patch(control.patchOrder)
 
+router
+    .route('/lookup')
+    .post(control.lookupID)
 
 router
     .route('/JWT')
@@ -30,6 +34,3 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)
 })
-
-
-

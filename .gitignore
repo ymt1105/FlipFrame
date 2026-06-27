@@ -2,8 +2,7 @@
 /backend/node_modules
 /backend/testscripts
 /backend/playground
-/backend/itemslugs.json
-/backend/fullslug.json
+/backend/resources/itemlookup.json
 
 
 # Logs

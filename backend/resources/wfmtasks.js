@@ -3,6 +3,8 @@ import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { sleep } from './sleep.js';
+import { writeFile } from 'node:fs/promises';
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../.env') });
@@ -153,8 +155,31 @@ export async function getJWT(){
     console.log(token)
     return token;
 }
-const test_slug = "rhino_prime_set";
 
+export async function createItemNameLookupFile(){
+    try {
+        const modifiedURL = `${baseURL}/items`;
+
+        const response = await fetch(modifiedURL);
+        const responseJson = await response.json();
+        if (!response.ok) {
+            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
+        }
+        const lookupJson = {};
+        for (const item of Object.values(responseJson.data)){
+            const itemName = item.i18n.en.name;
+            const itemID = item.id
+            lookupJson[itemID] = itemName;
+            
+        }
+        const jsonString = JSON.stringify(lookupJson, null, 2);
+        const filePath = path.join(process.cwd(), 'itemlookup.json');
+        console.log(filePath);
+        await writeFile(filePath, jsonString , 'utf8');
+    } catch (err) {
+        console.error("Operation failed:", err.message);    
+    }
+}
 
 // // test adding orders
 // const itemID = await getItemID(test_slug);
@@ -169,3 +194,5 @@ const test_slug = "rhino_prime_set";
 
 // // //test deleting all orders
 // await deleteAllOrders();
+
+createItemNameLookupFile();

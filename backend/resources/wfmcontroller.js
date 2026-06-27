@@ -1,4 +1,5 @@
 import * as task from './wfmtasks.js'
+import { matchLookup } from './matchLookup.js';
 //express friendly functions
 
 export async function fetchAllOrders (req, res) {
@@ -56,6 +57,16 @@ export async function JWT (req, res) {
         const data = await task.getJWT();
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message})
+        res.status(500).json({ error: error.message});
+    }
+}
+
+export async function lookupID (req, res){
+    try {
+        const { idArray } = req.body;
+        const data = await matchLookup(idArray)
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message});
     }
 }

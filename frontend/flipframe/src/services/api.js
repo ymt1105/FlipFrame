@@ -9,3 +9,20 @@ export async function getAllOrders(){
     const data = await response.json();
     return data;
 }
+
+export async function lookupItemArray(itemArray){
+    const response = await fetch(`${API_URL}/lookup`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idArray: itemArray })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+}
