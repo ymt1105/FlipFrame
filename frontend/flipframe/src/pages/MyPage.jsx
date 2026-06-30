@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { getAllOrders, lookupItemArray } from '../services/api';
 
 export const MyPage = () => {
-    // 1. Fetch the primary list
     const { data: items, isLoading: isOrdersLoading, error: ordersError, isSuccess } = useQuery({
         queryKey: ["orders"],
         queryFn: getAllOrders

@@ -15,6 +15,12 @@ export const NavBar = () => {
             Watchlist
         </NavLink>
 
+        <NavLink to="/holdings" className ={({ isActive }) => 
+                `p-2 text-white block ${isActive ? "bg-green-700 font-bold" : "bg-green-500"}`
+            }>
+            Holdings
+        </NavLink>
+
         <NavLink to="/current" className ={({ isActive }) => 
                 `p-2 text-white block ${isActive ? "bg-green-700 font-bold" : "bg-green-500"}`
             }>

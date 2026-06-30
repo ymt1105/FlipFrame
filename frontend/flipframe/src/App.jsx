@@ -7,6 +7,7 @@ import { NavBar } from './components/NavBar';
 
 import { WatchlistContext } from './context/WatchlistContext';
 import './App.css'
+import { HoldingsPage } from './pages/HoldingsPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element = {<MainPage/>}></Route>
         <Route path="/current" element = {<MyPage/>}></Route>
+        <Route path="/holdings" element = {<HoldingsPage/>}></Route>
         <Route path="/watchlist" element = {<WatchlistPage/>}></Route>
       </Routes>
     </BrowserRouter>
