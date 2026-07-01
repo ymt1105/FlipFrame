@@ -19,6 +19,9 @@ router
     .route('/order/:id')
     .delete(control.deleteSingle)
     .patch(control.patchOrder)
+router
+    .route('/item/:name')
+    .get(control.itemSearch)
 
 router
     .route('/lookup')

@@ -169,17 +169,38 @@ export async function createItemNameLookupFile(){
         for (const item of Object.values(responseJson.data)){
             const itemName = item.i18n.en.name;
             const itemID = item.id
-            lookupJson[itemID] = itemName;
+            const itemSlug = item.slug;
+            lookupJson[itemID] = [itemName, itemSlug];
             
         }
         const jsonString = JSON.stringify(lookupJson, null, 2);
-        const filePath = path.join(process.cwd(), 'itemlookup.json');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
+        const filePath = path.join(__dirname, 'itemlookup.json');
         console.log(filePath);
         await writeFile(filePath, jsonString , 'utf8');
     } catch (err) {
         console.error("Operation failed:", err.message);    
     }
 }
+
+export async function getItem(slugorname){
+    try {
+        const modifiedURL = `${baseURL}/item/${slugorname}`;
+        const response = await fetch(modifiedURL);
+        const responseJson = await response.json();
+        if (!response.ok) {
+            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
+        }
+        return responseJson;
+    } catch (err) {
+        console.error("Operation failed:", err.message);    
+    }
+    
+}
+
+
 
 // // test adding orders
 // const itemID = await getItemID(test_slug);

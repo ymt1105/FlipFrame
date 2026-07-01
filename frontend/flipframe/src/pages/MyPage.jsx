@@ -27,7 +27,6 @@ export const MyPage = () => {
             <ul>
                 {items?.data?.map((item) => {
                     const lookupResult = lookupData?.find(res => res.id === item.itemId);
-                    console.log("Full Order Object:", item.itemId);
                     return (
                         <li key={item.id}>
                             {item.type} — {item.platinum} Platinum

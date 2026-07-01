@@ -70,3 +70,16 @@ export async function lookupID (req, res){
         res.status(500).json({ error: error.message});
     }
 }
+
+export async function itemSearch (req, res){
+    try {
+        const slugorname = req.params.name;
+        const data = await task.getItem(slugorname);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message});
+    }
+}
+
+
+

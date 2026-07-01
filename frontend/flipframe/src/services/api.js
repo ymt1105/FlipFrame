@@ -26,3 +26,15 @@ export async function lookupItemArray(itemArray){
     const data = await response.json();
     return data;
 }
+
+export async function getItemInfo(slugorname){
+    const slug = typeof slugorname === 'object' ? slugorname.slug : slugorname;
+    const response = await fetch(`${API_URL}/item/${slug}`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log("Raw API response:", data);
+    return data;
+}

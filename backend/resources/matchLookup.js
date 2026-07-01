@@ -9,7 +9,8 @@ export async function matchLookup(itemIDsArray) {
     const enrichedItems = itemIDsArray.map(id => {
         return {
             id: id,
-            name: itemLookup[id] || "Unknown Item"
+            name: itemLookup[id][0]|| "Unknown Item",
+            slug: itemLookup[id][1]|| "Unknown Slug"
         };
     }); 
 
