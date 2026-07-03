@@ -200,6 +200,17 @@ export async function getItem(slugorname){
     
 }
 
+export async function bumpOrders(){
+    try {
+        const allOrders = await getAllOrders();
+        for (const order of Object.values(allOrders.data)){
+            const uppayload = await createEditPayload(order.platinum, 1);
+            await editOrder(uppayload, order.id)
+        }
+    } catch (err) {
+        console.error("Failed to bump")
+    }
+}
 
 
 // // test adding orders
@@ -216,4 +227,5 @@ export async function getItem(slugorname){
 // // //test deleting all orders
 // await deleteAllOrders();
 
-createItemNameLookupFile();
+// createItemNameLookupFile();
+bumpOrders();
