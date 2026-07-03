@@ -38,3 +38,9 @@ export async function getItemInfo(slugorname){
     console.log("Raw API response:", data);
     return data;
 }
+
+export async function getOrdersOnItem(slug){
+    const response = await fetch(`${API_URL}/order/item/${slug}/top`);
+    const data = await response.json();
+    return data
+}

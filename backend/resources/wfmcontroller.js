@@ -1,5 +1,6 @@
-import * as task from './wfmtasks.js'
+import * as task from './wfmtasks.js';
 import { matchLookup } from './matchLookup.js';
+import { retrieveWFM } from './retrieveWFM.js';
 //express friendly functions
 
 export async function fetchAllOrders (req, res) {
@@ -81,5 +82,33 @@ export async function itemSearch (req, res){
     }
 }
 
+export async function bump (req, res){
+    try{
+        const data = await task.bumpOrders();
+        res.json(data);
+    } catch(error) {
+        res.status(500).json({ error: error.message});
+    }
+}
+
+export async function retreiveOrdersOnItem (req, res){
+    try{
+        const slug = req.params.slug;
+        const data = await retrieveWFM(slug);
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message});
+    }
+}
+
+export async function retreiveTopOrdersOnItem (req, res){
+    try{
+        const slug = req.params.slug;
+        const data = await task.getTopOrdersonItem(slug);
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message});
+    }
+}
 
 

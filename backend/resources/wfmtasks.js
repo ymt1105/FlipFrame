@@ -204,14 +204,27 @@ export async function bumpOrders(){
     try {
         const allOrders = await getAllOrders();
         for (const order of Object.values(allOrders.data)){
-            const uppayload = await createEditPayload(order.platinum, 1);
-            await editOrder(uppayload, order.id)
+            const uppayload = await createEditPayload(order.platinum, order.quantity);
+            await editOrder(uppayload, order.id);
         }
+        return "All your orders have been bumped";
     } catch (err) {
         console.error("Failed to bump")
     }
 }
 
+export async function getTopOrdersonItem(item_slug){
+    try {
+        const response = await fetch(`https://api.warframe.market/v2/orders/item/${item_slug}/top`);
+        const responseJson = await response.json();
+        if (!response.ok) {
+            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
+        }
+        return responseJson;
+    } catch (err){
+        console.error("Operation failed:", err.message);    
+    }
+}
 
 // // test adding orders
 // const itemID = await getItemID(test_slug);

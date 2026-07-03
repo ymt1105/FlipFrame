@@ -14,6 +14,16 @@ router
     .get(control.fetchAllOrders)
     .delete(control.deleteAllOrders)
     .post(control.newOrder)
+router
+    .route('/order/bump')
+    .get(control.bump)
+router
+    .route('/order/item/:slug')
+    .get(control.retreiveOrdersOnItem)
+
+    router
+    .route('/order/item/:slug/top')
+    .get(control.retreiveTopOrdersOnItem)
 
 router
     .route('/order/:id')
