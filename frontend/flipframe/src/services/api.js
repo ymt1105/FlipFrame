@@ -35,7 +35,6 @@ export async function getItemInfo(slugorname){
     }
 
     const data = await response.json();
-    console.log("Raw API response:", data);
     return data;
 }
 
