@@ -3,7 +3,7 @@
 /backend/testscripts
 /backend/playground
 /backend/resources/itemlookup.json
-
+/.env
 
 # Logs
 /frontend/flipframe/logs

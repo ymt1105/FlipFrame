@@ -35,6 +35,7 @@ router
 
 router
     .route('/lookup')
+    .get(control.returnLookUpSheet)
     .post(control.lookupID)
 
 router

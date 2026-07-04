@@ -43,3 +43,9 @@ export async function getOrdersOnItem(slug){
     const data = await response.json();
     return data
 }
+
+export async function getLookup(){
+    const response = await fetch(`${API_URL}/lookup`)
+    const data = await response.json();
+    return data
+}

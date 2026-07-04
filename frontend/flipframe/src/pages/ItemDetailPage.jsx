@@ -33,13 +33,33 @@ export const ItemDetailPage = () => {
     const handleAddToHoldings = () => {
         //probably uses a name : quantity system
     }
+
     return (
         <div>
             <h1>{info.i18n.en.name}</h1> 
             <img src ={image}/>
             <p>Trading Tax: {info.tradingTax}</p>
             <p>Ducats: {info.ducats}</p>
-            <p>Current Sell Price:{currSellPrice}</p>
+            <p>Current Sell Price: {currSellPrice}</p>
+            <table className = "center">
+                <thead>
+                    <tr>
+                        <th scope="col">Sell</th>
+                        <th scope="col">Buy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {topPrices?.sell.map((sellItem, index) => {
+                        const buyItem = topPrices?.buy?.[index];
+                        return (
+                            <tr key={index}>
+                                <td>{sellItem?.platinum || "None"}</td>
+                                <td>{buyItem?.platinum || "None"}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
             <p>Acceptable Buy Price:{currBuyPrice}</p>
             <p>Projected Real Price: PLACEHOLDER</p>
             <AddItemControls></AddItemControls>

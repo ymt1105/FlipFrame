@@ -4,10 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { sleep } from './sleep.js';
 import { writeFile } from 'node:fs/promises';
+import itemLookup from './itemlookup.json' with { type: 'json' };
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../.env') });
+config({ path: path.resolve(__dirname, '../../.env') });
 
 export const baseURL = "https://api.warframe.market/v2"
 
@@ -226,6 +227,15 @@ export async function getTopOrdersonItem(item_slug){
     }
 }
 
+export async function getLookUpSheet(){
+    try{
+        return itemLookup;
+    }catch(err){
+        console.error("No Lookup File")
+    }
+
+}
+
 // // test adding orders
 // const itemID = await getItemID(test_slug);
 // const payload = await createPayload(itemID, "buy", 100, 1);
@@ -241,4 +251,6 @@ export async function getTopOrdersonItem(item_slug){
 // await deleteAllOrders();
 
 // createItemNameLookupFile();
-bumpOrders();
+
+getLookUpSheet();
+// bumpOrders();
