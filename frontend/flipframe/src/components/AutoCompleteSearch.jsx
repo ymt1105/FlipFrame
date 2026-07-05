@@ -59,11 +59,9 @@ export const AutoCompleteSearch = () => {
             const filteredMatches = allItems.filter(([itemName, itemSlug]) => {
                 return itemName.toLowerCase().includes(formData.input.toLowerCase());
             });
-
             if (filteredMatches.length > 0) {
-                const convertedSlug = filteredMatches[0][1];
-                console.log("Found slug:", convertedSlug);
-                navigate(`/item/${convertedSlug}`);
+                const convertedSlug = filteredMatches.find(item => item[0] === itemName);
+                navigate(`/item/${convertedSlug[1]}`)
             } else {
                 console.log("No items matched that search phrase.");
             }

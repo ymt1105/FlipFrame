@@ -2,6 +2,7 @@ import { getAllOrders, getItemInfo, getOrdersOnItem } from "../services/api"
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query";
 import { AddItemControls } from "../components/AddItemControls";
+
 export const ItemDetailPage = () => {
     const { slug } = useParams(); // Get the string slug directly
     const { data: itemResponse, isLoading } = useQuery({
@@ -27,11 +28,22 @@ export const ItemDetailPage = () => {
 
     if (!info) return <div>Item not found</div>;
     const handleAddToWatchlist = () => {
-        // both these codes should be quite similar, however watch list will only store one of each id
+        const rawWatchlist = localStorage.getItem("Watchlist") || "[]";
+        const currentWatchlist = JSON.parse(rawWatchlist);
+        const uniqueWatchlist = [...new Set([...currentWatchlist, slug])];
+        console.log("Updated Watchlist:", uniqueWatchlist);
+        localStorage.setItem("Watchlist", JSON.stringify(uniqueWatchlist));
     }
 
-    const handleAddToHoldings = () => {
-        //probably uses a name : quantity system
+    const handleAddToHoldings = (quantityToAdd = 1) => {
+        const rawHoldings = localStorage.getItem("Holdings") || "{}";
+
+        const currentHolding = JSON.parse(rawHoldings);
+
+        const currentQuantity = currentHolding[slug] || 0
+        currentHolding[slug] = currentQuantity + currentQuantity;
+        console.log(currentHolding);
+        const updatedHoldings = localStorage.setItem("Holdings", JSON.stringify(currentHolding));
     }
 
     return (
