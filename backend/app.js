@@ -44,7 +44,10 @@ router
 
 
 app.use(router);
-const PORT = process.env.PORT;
+
+const API_URL = process.env.VITE_API_URL
+const PORT = API_URL.slice(-4)
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)
 })

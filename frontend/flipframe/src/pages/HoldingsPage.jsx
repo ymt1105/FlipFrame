@@ -1,3 +1,9 @@
+import { useHoldings } from "../context/HoldingsContext"
+
 export const HoldingsPage = () => {
-        //page that tells the user what current items they have, and when they go long
+        const { holdings } = useHoldings();
+
+        return (
+                <h2>Holdings</h2>
+        )
 }
