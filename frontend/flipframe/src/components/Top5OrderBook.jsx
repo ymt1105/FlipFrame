@@ -1,4 +1,4 @@
-import { getPriceData } from "../services/pricedata";
+import { getItemData } from "../services/pricedata";
 import { useState, useEffect } from "react";
 
 export const Top5OrderBook = ({ slug }) => {
@@ -9,7 +9,7 @@ export const Top5OrderBook = ({ slug }) => {
         const fetchData = async () => {
         try {
             setLoading(true);
-            const data = await getPriceData(slug);
+            const data = await getItemData(slug);
             setPriceData(data);
         } catch (error) {
             console.error("Failed to fetch price data:", error);
@@ -34,8 +34,6 @@ export const Top5OrderBook = ({ slug }) => {
     const rowIndices = Array.from({ length: maxRows }, (_, i) => i);
     return (
          <div>
-            <p>Current Sell Price: {currSellPrice}</p>
-
             <table className = "center">
                 <thead>
                     <tr>
@@ -57,6 +55,7 @@ export const Top5OrderBook = ({ slug }) => {
                     })}
                 </tbody>
             </table>
+            <p>Current Sell Price: {currSellPrice}</p>
             <p>Acceptable Buy Price:{currBuyPrice}</p>
             <p>Projected Real Price: {projectedRealPrice}</p>
         </div>

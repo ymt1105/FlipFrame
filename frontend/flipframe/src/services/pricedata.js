@@ -1,6 +1,6 @@
 import { getItemInfo, getOrdersOnItem } from "./api";
 
-export async function getPriceData (slug){
+export async function getItemData (slug){
     const itemResponse = await getItemInfo(slug);
     const priceData = await getOrdersOnItem(slug);
 
@@ -11,6 +11,12 @@ export async function getPriceData (slug){
     const currBuyPrice = topPrices?.buy[0]?.platinum;
     //TODO: look at 2d graph to figure out the actual price
     const projectedRealPrice = "PLACEHOLDER";
-
     return [currSellPrice, currBuyPrice, projectedRealPrice, topPrices];
+}
+
+export async function getImage (slug){
+    const itemResponse = await getItemInfo(slug);
+    const info = itemResponse?.data;
+    const image = `https://warframe.market/static/assets/${info.i18n.en.thumb}`
+    return image;
 }

@@ -17,7 +17,7 @@ export const ItemDetailPage = () => {
     const { addWatchlist } = useWatchlist();
 
 
-        const {data : itemResponse, isLoading} = useQuery({
+    const {data : itemResponse, isLoading} = useQuery({
         queryKey: ["item", slug],
         queryFn: () => getItemInfo(slug)
     });

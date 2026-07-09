@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { AutoCompleteSearch} from "../components/AutoCompleteSearch"
 export const MainPage = () => {
     return (
-        <AutoCompleteSearch/>
+        <div className="px-6 py-6">
+            <AutoCompleteSearch/>
+        </div>
     );
 }
