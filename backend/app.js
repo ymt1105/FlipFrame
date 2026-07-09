@@ -21,7 +21,7 @@ router
     .route('/order/item/:slug')
     .get(control.retreiveOrdersOnItem)
 
-    router
+router
     .route('/order/item/:slug/top')
     .get(control.retreiveTopOrdersOnItem)
 

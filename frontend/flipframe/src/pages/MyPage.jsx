@@ -21,7 +21,7 @@ export const MyPage = () => {
 
     return (
         <div>
-            <h1>Product List</h1>
+            <p>Product List</p>
             {isLookupLoading && <p>Loading extra details...</p>}
             
             <ul>

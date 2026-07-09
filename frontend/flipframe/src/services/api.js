@@ -45,7 +45,17 @@ export async function getOrdersOnItem(slug){
 }
 
 export async function getLookup(){
-    const response = await fetch(`${API_URL}/lookup`)
+    const response = await fetch(`${API_URL}/lookup`);
     const data = await response.json();
+    return data
+}
+
+export async function bump(){
+    const response = await fetch(`${API_URL}/order/bump`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+    }
+    const data = await response.json();
+
     return data
 }

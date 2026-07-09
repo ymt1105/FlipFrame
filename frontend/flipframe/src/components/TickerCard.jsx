@@ -9,7 +9,7 @@ export const TickerCard = ({itemSlug}) => {
     return (
         <div>
             <div className = "bg-white p-4 border rounded shadow-md flex flex-col h-full">
-                <div class>
+                <div>
                     <h2>{itemSlug}</h2>
                     <img src={image} className='max-w-40'/>
                 </div>

@@ -36,9 +36,9 @@ export const Top5OrderBook = ({ slug }) => {
          <div>
             <table className = "center">
                 <thead>
-                    <tr>
-                        <th scope="col">Sell</th>
-                        <th scope="col">Buy</th>
+                    <tr className="border-gray-200 dark:border-gray-800">
+                        <th scope="col" className="font-semibold bg-rose-300">Sell</th>
+                        <th scope="col" className="font-semibold bg-green-300">Buy</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,8 +48,8 @@ export const Top5OrderBook = ({ slug }) => {
                         
                         return (
                             <tr key={index}>
-                                <td>{sellItem ? `${sellItem.platinum}p` : "None"}</td>
-                                <td>{buyItem ? `${buyItem.platinum}p` : "None"}</td>
+                                <td className="text-rose-900">{sellItem ? `${sellItem.platinum}p` : "None"}</td>
+                                <td className="text-green-900">{buyItem ? `${buyItem.platinum}p` : "None"}</td>
                             </tr>
                         );
                     })}

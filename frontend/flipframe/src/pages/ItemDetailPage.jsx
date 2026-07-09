@@ -48,7 +48,7 @@ export const ItemDetailPage = () => {
     }
     return (
         <div>
-            <h1>{info.i18n.en.name}</h1> 
+            <p className = "text-5xl font-bold">{info.i18n.en.name}</p> 
             <img src ={image}/>
             <Top5OrderBook slug = {slug}/>
 
