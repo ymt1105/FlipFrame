@@ -1,6 +1,5 @@
 import * as task from './wfmtasks.js';
 import { matchLookup } from './matchLookup.js';
-import { retrieveWFM } from './retrieveWFM.js';
 //express friendly functions
 
 export async function fetchAllOrders (req, res) {
@@ -31,8 +30,7 @@ export async function deleteSingle (req, res) {
 
 export async function newOrder (req, res) {
     try {
-        const { itemId, type, platinum, quantity} = req.body;
-        const payload = await task.createPayload(itemId, type, platinum, quantity);
+        const payload = await task.createPayload(req.body);
         const data = await task.addOrder(payload);
         res.json(data);
     } catch (error) {
@@ -44,6 +42,7 @@ export async function patchOrder (req, res) {
     try {
         const id = req.params.id;
         const { platinum, quantity, visible} = req.body;
+        
         const payload = await task.createEditPayload(platinum, quantity, visible);
         const data = await task.editOrder(payload, id);
         res.json(data);
@@ -94,7 +93,7 @@ export async function bump (req, res){
 export async function retreiveOrdersOnItem (req, res){
     try{
         const slug = req.params.slug;
-        const data = await retrieveWFM(slug);
+        const data = await task.getItem(slug)
         res.json(data);
     } catch(error){
         res.status(500).json({ error: error.message});

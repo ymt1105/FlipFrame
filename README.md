@@ -3,12 +3,6 @@ A Node.js-based data pipeline that fetches item pricing data from the Warframe M
 
 ## Setup
 1. Clone the repository.
-2. Install dependencies: `npm install`.
-3. Create a `.env` file with your environment variables:
-   ```text
-   AWS_ACCESS_KEY_ID=your_key
-   AWS_SECRET_ACCESS_KEY=your_secret
-   AWS_REGION=ap-southeast-2
-   BUCKET_NAME=your_bucket
-   ```
-## 
+2. Install dependencies in both frontend/flipframe and backend using 'npm install'
+3. Create a look up file in backend/resources using 'node createLookupFile.js'
+4. Using terminal run the server and vite using 'npm run dev:all'

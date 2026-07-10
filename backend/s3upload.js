@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { retrieveWFM } from './resources/retrieveWFM.js';
+import * as task from './wfmtasks.js';
 import { readTextFile } from './resources/readTextFile.js';
 import { destructureOrders } from './resources/destructureOrders.js';
 import { sleep } from './resources/sleep.js';
@@ -13,7 +13,7 @@ const test_data = await readTextFile('itemslugs.json');
 async function retrieveItemOrders() {
     for (const [name, details] of Object.entries(test_data)) {
         const slug = details[0];
-        const orders = await retrieveWFM(slug);
+        const orders = await task.getItem(slug);
         const simplifiedOrders = await destructureOrders(orders);
         // uploadToAWS(name, simplifiedOrders);
         console.log(simplifiedOrders);

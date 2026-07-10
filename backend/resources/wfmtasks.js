@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { sleep } from './sleep.js';
 import { writeFile } from 'node:fs/promises';
 import itemLookup from './itemlookup.json' with { type: 'json' };
+import { matchLookup } from './matchLookup.js';
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,32 +50,51 @@ export async function deleteSingleOrder(orderID){
 
 }
 
-export async function createPayload(item_id, type, buy_price, quantity){
+export async function createPayload({ itemId, type, platinum, quantity, visible = true, ...optionalFields}) {
+    if (!itemId || !type || platinum === undefined || quantity === undefined) {
+        throw new Error("Missing required fields: itemId, type, platinum, and quantity are required.");
+    }
+
     const payload = {
-        "itemId": item_id, 
-        "type": type, 
-        "platinum": buy_price, 
-        "quantity": quantity, 
-        "visible": true
-    } 
+        itemId,
+        type,
+        platinum,
+        quantity,
+        visible,
+        ...optionalFields 
+    };
+
     return payload;
 }
 
-export async function createEditPayload(platinum, quantity){
+export async function createEditPayload(platinum, quantity, visible = true, ...optionalFields){
+    if (platinum === undefined || quantity === undefined) {
+        throw new Error("Missing required fields: platinum, and quantity are required.");
+    }
+
     const payload = {
-        "platinum": platinum,
-	    "quantity": quantity,
-        "visible": true
-    } 
+        platinum,
+        quantity,
+        visible,
+        ...optionalFields 
+    };
+
     return payload;
 }
 
 export async function getItemID(itemSlug){
-    const modifiedURL = `${baseURL}/item/${itemSlug}`;
-    const response = await fetch(modifiedURL)
-    const responseJson = await response.json()
-    const itemID = responseJson.data.id;
-    return itemID;
+    if (!itemSlug) return null;
+
+    const foundEntry = Object.entries(itemLookup).find(([id, itemData]) => {
+        const slug = itemData[1];
+        return slug === itemSlug.toLowerCase().trim();
+    });
+
+    if (foundEntry) {
+        const [id, [name, slug]] = foundEntry;
+        return id;
+    }
+    return null;
 }
 export async function getItemName(itemID){
     const modifiedURL = `${baseURL}/itemId/${itemID}`;
@@ -95,17 +115,23 @@ export async function getOrderID(itemName){
 
 }
 export async function addOrder(payload){
-    const modifiedURL = `${baseURL}/order`;
+    try{
+        const modifiedURL = `${baseURL}/order`;
 
-    const response = await fetch(modifiedURL, 
-    {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(payload)
-    });
-    const responseJson = await response.json()
-    console.log("Successfully added order");
-    
+        const response = await fetch(modifiedURL, 
+        {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+        const responseJson = await response.json()    
+        if (!response.ok) {
+            console.error(`API Error (${response.status}):`, responseJson);
+            throw new Error(responseJson.error || `Server responded with status ${response.status}`);
+        }
+    } catch(err){
+        console.error("Operation failed:", err.message);    
+    }
 }
 
 export async function editOrder(payload, id){
@@ -130,65 +156,9 @@ export async function editOrder(payload, id){
     
 }
 
-
-
-
-export async function getJWT(){
-    const email = process.env.WF_EMAIL;
-    const password = process.env.WF_PASS;
-    let rep = await fetch("https://api.warframe.market/v1/auth/signin", {
-        method: "POST",
-        headers: { 
-            "Authorization": "JWT", 
-            "Content-Type": "application/json" 
-        },
-        body: JSON.stringify({
-            email: email,
-            password: password
-        })
-    });
-
-    let token = rep.headers
-        .get("set-cookie")
-        .split(";")[0]
-        .replace("JWT=", "");
-
-    console.log(token)
-    return token;
-}
-
-export async function createItemNameLookupFile(){
+export async function getItem(slug){
     try {
-        const modifiedURL = `${baseURL}/items`;
-
-        const response = await fetch(modifiedURL);
-        const responseJson = await response.json();
-        if (!response.ok) {
-            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
-        }
-        const lookupJson = {};
-        for (const item of Object.values(responseJson.data)){
-            const itemName = item.i18n.en.name;
-            const itemID = item.id
-            const itemSlug = item.slug;
-            lookupJson[itemID] = [itemName, itemSlug];
-            
-        }
-        const jsonString = JSON.stringify(lookupJson, null, 2);
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-
-        const filePath = path.join(__dirname, 'itemlookup.json');
-        console.log(filePath);
-        await writeFile(filePath, jsonString , 'utf8');
-    } catch (err) {
-        console.error("Operation failed:", err.message);    
-    }
-}
-
-export async function getItem(slugorname){
-    try {
-        const modifiedURL = `${baseURL}/item/${slugorname}`;
+        const modifiedURL = `${baseURL}/item/${slug}`;
         const response = await fetch(modifiedURL);
         const responseJson = await response.json();
         if (!response.ok) {
@@ -236,9 +206,20 @@ export async function getLookUpSheet(){
 
 }
 
-// // test adding orders
+
+// const test_slug = "arcane_avenger"
+// test adding orders
 // const itemID = await getItemID(test_slug);
-// const payload = await createPayload(itemID, "buy", 100, 1);
+// const payload = await createPayload({
+//     itemId: itemID,    
+//     type: "sell",         
+//     platinum: 100,      
+//     quantity: 12,    
+//     visible: true, 
+//     perTrade: 6,
+// 	rank: 5 
+// });
+// console.log(payload);
 // await addOrder(payload);
 
 // // test updating orders
@@ -252,5 +233,4 @@ export async function getLookUpSheet(){
 
 // createItemNameLookupFile();
 
-getLookUpSheet();
-// bumpOrders();
+// console.log(await matchLookup(["5510859ce779897292ba1efc"]))
