@@ -29,7 +29,7 @@ export const MyPage = () => {
                     const lookupResult = lookupData?.find(res => res.id === item.itemId);
                     return (
                         <li key={item.id}>
-                            {item.type} — {item.platinum} Platinum
+                            {item.type} - {item.platinum} Platinum
                             
                             {lookupResult && (
                                 <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>

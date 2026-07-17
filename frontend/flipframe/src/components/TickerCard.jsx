@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { Top5OrderBook } from './Top5OrderBook'
-import { getImage } from '../services/pricedata'
+import { getItemData } from '../services/itemdata'
 export const TickerCard = ({itemSlug}) => {
     const { data: image, isLoading} = useQuery({
         queryKey: ["item", itemSlug],
-        queryFn: () => getImage(itemSlug)
+        queryFn: () => getItemData(itemSlug).then(data => data.response.imageURL)
     })
     return (
         <div>

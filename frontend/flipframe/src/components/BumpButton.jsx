@@ -5,6 +5,6 @@ export const BumpButton = () =>{
         const status = bump();
     }
     return (
-        <button onClick={handleBump} className="bg-green-500">Bump all orders</button>
+        <button onClick={handleBump} className="flex bg-green-500">Bump all orders</button>
     )
 }

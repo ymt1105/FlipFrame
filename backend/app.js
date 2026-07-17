@@ -23,7 +23,7 @@ router
 
 router
     .route('/order/item/:slug/top')
-    .get(control.retreiveTopOrdersOnItem)
+    .get(control.retreiveTopOrdersItemRank)
 
 router
     .route('/order/:id')

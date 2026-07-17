@@ -34,7 +34,7 @@ export async function deleteAllOrders(){
     for (const order of Object.values(allUserOrders.data)){
         const orderid = order.id;
         deleteSingleOrder(orderid);
-        await sleep(400);
+        await sleep(300);
     }    
 
 }
@@ -175,8 +175,9 @@ export async function bumpOrders(){
     try {
         const allOrders = await getAllOrders();
         for (const order of Object.values(allOrders.data)){
-            const uppayload = await createEditPayload(order.platinum, order.quantity);
-            await editOrder(uppayload, order.id);
+            const payload = await createEditPayload(order.platinum, order.quantity);
+            await editOrder(payload, order.id);
+            await sleep(300);
         }
         return "All your orders have been bumped";
     } catch (err) {
@@ -184,14 +185,15 @@ export async function bumpOrders(){
     }
 }
 
-export async function getTopOrdersonItem(item_slug){
+export async function getTopOrdersOnRank(item_slug, rank){
     try {
-        const response = await fetch(`https://api.warframe.market/v2/orders/item/${item_slug}/top`);
+        const response = await fetch(
+            `https://api.warframe.market/v2/orders/item/${item_slug}/top/?rank=${rank}`);
         const responseJson = await response.json();
         if (!response.ok) {
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }
-        return responseJson;
+        return responseJson
     } catch (err){
         console.error("Operation failed:", err.message);    
     }

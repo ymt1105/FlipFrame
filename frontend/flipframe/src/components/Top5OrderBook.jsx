@@ -1,15 +1,18 @@
-import { getItemData } from "../services/pricedata";
+import { getItemData } from "../services/itemdata";
 import { useState, useEffect } from "react";
+import { RankSelect } from "./RankSelect";
 
 export const Top5OrderBook = ({ slug }) => {
     const [priceData, setPriceData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [rank, setRank] = useState(0);
 
+    //FIX THE MAX AND MINIMUM BUTTONS
     useEffect(() => {
         const fetchData = async () => {
         try {
             setLoading(true);
-            const data = await getItemData(slug);
+            const data = await getItemData(slug, rank);
             setPriceData(data);
         } catch (error) {
             console.error("Failed to fetch price data:", error);
@@ -19,21 +22,26 @@ export const Top5OrderBook = ({ slug }) => {
         };
 
         fetchData();
-    }, [slug]);
+    }, [slug, rank]);
 
     if (loading) return <div>Loading order book...</div>;
     if (!priceData) return <div>No data available</div>;
 
-    const currSellPrice = priceData[0]
-    const currBuyPrice = priceData[1]
-    const projectedRealPrice = priceData[2]
-    const topPrices = priceData[3]
+
+    const maxRank = priceData.info.maxRank;
+    const currSellPrice = priceData.response.currSellPrice;
+    const currBuyPrice = priceData.response.currBuyPrice;
+    const projectedRealPrice = priceData.response.projectedRealPrice;
+    const topPrices = priceData.response.topPrices;
 
     const maxRows = Math.max(topPrices?.sell?.length || 0, topPrices?.buy?.length || 0);
 
     const rowIndices = Array.from({ length: maxRows }, (_, i) => i);
     return (
          <div>
+            {(priceData.info?.tags?.includes("arcane_enhancement") || priceData.info?.tags?.includes("mod")) && (
+                <RankSelect rank = {rank} setRank={setRank} maxRank={maxRank}/>
+            )}
             <table className = "center">
                 <thead>
                     <tr className="border-gray-200 dark:border-gray-800">
@@ -56,7 +64,8 @@ export const Top5OrderBook = ({ slug }) => {
                 </tbody>
             </table>
             <p>Current Sell Price: {currSellPrice}</p>
-            <p>Acceptable Buy Price:{currBuyPrice}</p>
+            <p>Acceptable Buy Price: {currBuyPrice}</p>
+            <p>Spread: {currSellPrice - currBuyPrice}</p>
             <p>Projected Real Price: {projectedRealPrice}</p>
         </div>
     )

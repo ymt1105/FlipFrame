@@ -4,7 +4,6 @@ import { useHoldings } from "../context/HoldingsContext"
 
 export const HoldingsPage = () => {
         const { holdings } = useHoldings();
-        console.log(holdings);
         // sum up all the holdings prices and stuff
         const currentAssetValuation = "0"
         return (

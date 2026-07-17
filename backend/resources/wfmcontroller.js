@@ -100,10 +100,12 @@ export async function retreiveOrdersOnItem (req, res){
     }
 }
 
-export async function retreiveTopOrdersOnItem (req, res){
+export async function retreiveTopOrdersItemRank (req, res){
     try{
         const slug = req.params.slug;
-        const data = await task.getTopOrdersonItem(slug);
+        const { rank } = req.query
+    
+        const data = await task.getTopOrdersOnRank(slug, rank);
         res.json(data);
     } catch(error){
         res.status(500).json({ error: error.message});

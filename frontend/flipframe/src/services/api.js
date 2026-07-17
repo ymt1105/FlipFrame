@@ -27,8 +27,8 @@ export async function lookupItemArray(itemArray){
     return data;
 }
 
-export async function getItemInfo(slugorname){
-    const slug = typeof slugorname === 'object' ? slugorname.slug : slugorname;
+export async function getItemInfo(input){
+    const slug = typeof input === 'object' ? input.slug : input;
     const response = await fetch(`${API_URL}/item/${slug}`);
     if (!response.ok) {
         throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -39,10 +39,17 @@ export async function getItemInfo(slugorname){
 }
 
 export async function getOrdersOnItem(slug){
-    const response = await fetch(`${API_URL}/order/item/${slug}/top`);
+    const response = await fetch(`${API_URL}/order/item/${slug}/top/?rank=0`);
     const data = await response.json();
     return data
 }
+
+export async function getOrdersOnItemRank(slug, maxRank){
+    const response = await fetch(`${API_URL}/order/item/${slug}/top/?rank=${maxRank}`);
+    const data = await response.json();
+    return data
+}
+
 
 export async function getLookup(){
     const response = await fetch(`${API_URL}/lookup`);
