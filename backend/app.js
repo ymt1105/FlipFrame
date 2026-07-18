@@ -26,9 +26,19 @@ router
     .get(control.retreiveTopOrdersItemRank)
 
 router
+    router 
+    .route('/order/riven')
+    .get(control.getAllContracts)
+    
+router 
+    .route('/order/riven/:slug')
+    .get(control.returnRivenOrders)
+
+router
     .route('/order/:id')
     .delete(control.deleteSingle)
     .patch(control.patchOrder)
+    
 router
     .route('/item/:name')
     .get(control.itemSearch)
@@ -37,6 +47,9 @@ router
     .route('/lookup')
     .get(control.returnLookUpSheet)
     .post(control.lookupID)
+router
+    .route('/riven/lookup')
+    .get(control.returnRivenLookUpSheet)
 
 router
     .route('/JWT')

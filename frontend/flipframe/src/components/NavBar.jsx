@@ -3,7 +3,7 @@ import { BumpButton } from "./BumpButton";
 export const NavBar = () => {
     return (
         <div>
-            <div className="grid grid-cols-4">
+            <div className="grid grid-cols-5">
                 <NavLink to="/" className ={({ isActive }) => 
                         `p-2 text-white block ${isActive ? "bg-green-700 font-bold" : "bg-green-500"}`
                     }>
@@ -26,6 +26,12 @@ export const NavBar = () => {
                         `p-2 text-white block ${isActive ? "bg-green-700 font-bold" : "bg-green-500"}`
                     }>
                     Your Page
+                </NavLink>
+
+                <NavLink to="/riven" className ={({ isActive }) => 
+                        `p-2 text-white block ${isActive ? "bg-purple-700 font-bold" : "bg-purple-500"}`
+                    }>
+                    Riven Search
                 </NavLink>
             </div>
             <BumpButton/>

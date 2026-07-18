@@ -7,7 +7,6 @@ export const Top5OrderBook = ({ slug }) => {
     const [loading, setLoading] = useState(true);
     const [rank, setRank] = useState(0);
 
-    //FIX THE MAX AND MINIMUM BUTTONS
     useEffect(() => {
         const fetchData = async () => {
         try {

@@ -1,11 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllOrders, lookupItemArray } from '../services/api';
+import { getAllOrders, lookupItemArray, getAllContracts } from '../services/api';
+import { RivenCard } from '../components/RivenCard';
 
 export const MyPage = () => {
     const { data: items, isLoading: isOrdersLoading, error: ordersError, isSuccess } = useQuery({
         queryKey: ["orders"],
         queryFn: getAllOrders
     });
+
+    const {data: contracts} = useQuery({
+        queryKey: ["contracts"],
+        queryFn: getAllContracts
+    })
 
     const { data: lookupData, isLoading: isLookupLoading } = useQuery({
         queryKey: ["lookup", items?.data], 
@@ -19,6 +25,8 @@ export const MyPage = () => {
     if (isOrdersLoading) return <div>Loading...</div>;
     if (ordersError) return <div>Error: {ordersError.message}</div>;
 
+    const auctions = contracts?.payload?.auctions;
+    console.log(auctions);
     return (
         <div>
             <p>Product List</p>
@@ -39,7 +47,17 @@ export const MyPage = () => {
                         </li>
                     );
                 })}
+                
             </ul>
+            {auctions?.map((contract) => {
+                console.log(contract);
+                return (
+                    <RivenCard 
+                        key = {contract.id} 
+                        rivenData = {contract}
+                    />
+                )
+            })}
         </div>
     )
 }

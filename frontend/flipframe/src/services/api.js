@@ -57,6 +57,28 @@ export async function getLookup(){
     return data
 }
 
+export async function getRivenLookup(){
+    const response = await fetch(`${API_URL}/riven/lookup`);
+    const data = await response.json();
+    return data
+}
+
+export async function getItemContracts(slug){
+    const response = await fetch(`${API_URL}/order/riven/${slug}`);
+    const data = await response.json();
+    return data
+}
+
+export async function getAllContracts(){
+    const response = await fetch(`${API_URL}/order/riven`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+}
+
+
 export async function bump(){
     const response = await fetch(`${API_URL}/order/bump`);
     if (!response.ok) {

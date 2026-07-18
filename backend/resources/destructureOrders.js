@@ -1,4 +1,5 @@
 export const destructureOrders = async (ordersJson) => {
+  
     const result = ordersJson.data.map(({ platinum, quantity, type, user }) => ({
       platinum: platinum,
       quantity: quantity,
@@ -8,7 +9,6 @@ export const destructureOrders = async (ordersJson) => {
     }));
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 0.1);
-
     const filteredResults = result.filter(item => {
       const lastSeenDate = new Date(item.lastSeen);
       
@@ -36,6 +36,5 @@ export const destructureOrders = async (ordersJson) => {
       price: Number(price),
       orderCount: count
     }));
-
   return reportJson;
 }

@@ -1,5 +1,6 @@
 import * as task from './wfmtasks.js';
 import { matchLookup } from './matchLookup.js';
+import * as riven from './riventasks.js';
 //express friendly functions
 
 export async function fetchAllOrders (req, res) {
@@ -118,5 +119,43 @@ export async function returnLookUpSheet (req, res){
         res.json(data);
     } catch(err){
         res.status(500).json({ err: error.message});
+    }
+}
+
+export async function returnRivenLookUpSheet (req, res){
+    try{
+        const data = await riven.getRivenLookUpSheet();
+        res.json(data);
+    } catch(err){
+        res.status(500).json({ err: error.message});
+    }
+}
+
+export async function returnRivenOrders (req, res){
+    try{
+        const slug = req.params.slug;
+        const data = await riven.getItemContractOrders(slug);
+        res.json(data);
+    } catch(err){
+        res.status(500).json({ err: error.message});
+    }
+}
+
+export async function lookupWeaponID (req, res){
+    try {
+        const { idArray } = req.body;
+        const data = await matchLookup(idArray)
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message});
+    }
+}
+
+export async function getAllContracts(req, res){
+    try {
+        const data = await riven.getAllContracts();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message})
     }
 }

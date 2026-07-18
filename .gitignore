@@ -1,8 +1,11 @@
 /backend/.env
+/backend/itemslugs.json
+/backend/fullslug.json
 /backend/node_modules
 /backend/testscripts
 /backend/playground
 /backend/resources/itemlookup.json
+/backend/resources/rivenlookup.json
 /.env
 
 # Logs
