@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export const StatusSelect = ({status, setStatus}) => {
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState("ingame");
 
     const handleAll = () => {
         setStatus("all")

@@ -26,7 +26,6 @@ export const Top5OrderBook = ({ slug }) => {
     if (loading) return <div>Loading order book...</div>;
     if (!priceData) return <div>No data available</div>;
 
-
     const maxRank = priceData.info.maxRank;
     const currSellPrice = priceData.response.currSellPrice;
     const currBuyPrice = priceData.response.currBuyPrice;
@@ -55,8 +54,12 @@ export const Top5OrderBook = ({ slug }) => {
                         
                         return (
                             <tr key={index}>
-                                <td className="text-rose-900">{sellItem ? `${sellItem.platinum}p` : "None"}</td>
-                                <td className="text-green-900">{buyItem ? `${buyItem.platinum}p` : "None"}</td>
+                                <td className="text-rose-900">
+                                    {sellItem ? `${sellItem.perTrade > 1 ? (sellItem.platinum / sellItem.perTrade).toFixed(0) : sellItem.platinum}p` : "None"}
+                                </td>
+                                <td className="text-green-900">
+                                    {buyItem ? `${buyItem.perTrade > 1 ? (buyItem.platinum / buyItem.perTrade).toFixed(0) : buyItem.platinum}p` : "None"}
+                                </td>                            
                             </tr>
                         );
                     })}

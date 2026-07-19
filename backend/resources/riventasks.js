@@ -21,12 +21,34 @@ export const headers = {
     "Content-Type": "application/json" 
 };
 
-export async function getItemContractOrders(item_slug){
-    const modifiedURL = `${baseURL}/auctions/search?type=riven&sort_by=price_asc&weapon_url_name=${item_slug}`
-    const response = await fetch(modifiedURL, headers);
-    const responseJson = await response.json();        
+export async function getItemContractOrders(item_slug) {
+    const modifiedURL = `${baseURL}/auctions/search?type=riven&sort_by=price_asc&weapon_url_name=${item_slug}`;
+    
+    const [maduraiRes, vazarinRes, naramonRes] = await Promise.all([
+        fetch(modifiedURL + "&polarity=madurai", headers),
+        fetch(modifiedURL + "&polarity=vazarin", headers),
+        fetch(modifiedURL + "&polarity=naramon", headers)
+    ]);
 
-    return responseJson;   
+    const maduraiJson = await maduraiRes.json();
+    const vazarinJson = await vazarinRes.json();
+    const naramonJson = await naramonRes.json();
+
+    const maduraiAuctions = maduraiJson?.payload?.auctions || [];
+    const vazarinAuctions = vazarinJson?.payload?.auctions || [];
+    const naramonAuctions = naramonJson?.payload?.auctions || [];
+
+    const combinedAuctions = [
+        ...maduraiAuctions,
+        ...vazarinAuctions,
+        ...naramonAuctions
+    ];
+
+    return {
+        payload: {
+            auctions: combinedAuctions
+        }
+    };
 }
 
 async function processItemContractOrders(orderJson){

@@ -26,7 +26,6 @@ export const MyPage = () => {
     if (ordersError) return <div>Error: {ordersError.message}</div>;
 
     const auctions = contracts?.payload?.auctions;
-    console.log(auctions);
     return (
         <div>
             <p>Product List</p>
@@ -50,7 +49,6 @@ export const MyPage = () => {
                 
             </ul>
             {auctions?.map((contract) => {
-                console.log(contract);
                 return (
                     <RivenCard 
                         key = {contract.id} 

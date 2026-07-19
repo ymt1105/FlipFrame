@@ -8,7 +8,7 @@ import { RivenAutoCompleteSearch } from "../components/RivenAutoCompleteSearch.j
 
 export const ContractsPage = () => {
     const { slug } = useParams();
-    const [status, setStatus] = useState("all");
+    const [status, setStatus] = useState("ingame");
 
     const {data : items, isLoading} = useQuery({
         queryKey: ["items", slug],
@@ -26,7 +26,6 @@ export const ContractsPage = () => {
         
         return true;
     });
-
     return (
         <div>
             <RivenAutoCompleteSearch/>
