@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react';
 import { getAllOrders, lookupItemArray, getAllContracts } from '../services/api';
 import { RivenCard } from '../components/RivenCard';
+import { OrderCard } from '../components/OrderCard';
+import {BumpButton} from '../components/BumpButton'
 
 export const MyPage = () => {
     const { data: items, isLoading: isOrdersLoading, error: ordersError, isSuccess } = useQuery({
@@ -22,28 +25,33 @@ export const MyPage = () => {
         enabled: isSuccess && !!items?.data && items.data.length > 0 
     });
 
+    const lookupMap = useMemo(() => {
+    const map = new Map();
+    if (!lookupData) return map;
+        
+        lookupData.forEach(res => {
+            const id = String(res._id || res.id);
+            map.set(id, res);
+        });
+        
+        return map;
+    }, [lookupData]);
+
     if (isOrdersLoading) return <div>Loading...</div>;
     if (ordersError) return <div>Error: {ordersError.message}</div>;
 
     const auctions = contracts?.payload?.auctions;
     return (
         <div>
-            <p>Product List</p>
+            <h1>Product List</h1>
+            <BumpButton/>
             {isLookupLoading && <p>Loading extra details...</p>}
             
             <ul>
                 {items?.data?.map((item) => {
-                    const lookupResult = lookupData?.find(res => res.id === item.itemId);
+                    const lookupResult = lookupMap.get(String(item.itemId));
                     return (
-                        <li key={item.id}>
-                            {item.type} - {item.platinum} Platinum
-                            
-                            {lookupResult && (
-                                <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>
-                                    | Lookup: {lookupResult.name} 
-                                </span>
-                            )}
-                        </li>
+                        <OrderCard key = {item.id} orderData = {item} itemInfo={lookupResult}/>
                     );
                 })}
                 

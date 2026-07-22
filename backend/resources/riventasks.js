@@ -22,33 +22,38 @@ export const headers = {
 };
 
 export async function getItemContractOrders(item_slug) {
-    const modifiedURL = `${baseURL}/auctions/search?type=riven&sort_by=price_asc&weapon_url_name=${item_slug}`;
-    
-    const [maduraiRes, vazarinRes, naramonRes] = await Promise.all([
-        fetch(modifiedURL + "&polarity=madurai", headers),
-        fetch(modifiedURL + "&polarity=vazarin", headers),
-        fetch(modifiedURL + "&polarity=naramon", headers)
-    ]);
+    try {
+        const modifiedURL = `${baseURL}/auctions/search?type=riven&sort_by=price_asc&weapon_url_name=${item_slug}`;
+        
+        const [maduraiRes, vazarinRes, naramonRes] = await Promise.all([
+            fetch(modifiedURL + "&polarity=madurai", headers),
+            fetch(modifiedURL + "&polarity=vazarin", headers),
+            fetch(modifiedURL + "&polarity=naramon", headers)
+        ]);
 
-    const maduraiJson = await maduraiRes.json();
-    const vazarinJson = await vazarinRes.json();
-    const naramonJson = await naramonRes.json();
+        const maduraiJson = await maduraiRes.json();
+        const vazarinJson = await vazarinRes.json();
+        const naramonJson = await naramonRes.json();
 
-    const maduraiAuctions = maduraiJson?.payload?.auctions || [];
-    const vazarinAuctions = vazarinJson?.payload?.auctions || [];
-    const naramonAuctions = naramonJson?.payload?.auctions || [];
+        const maduraiAuctions = maduraiJson?.payload?.auctions || [];
+        const vazarinAuctions = vazarinJson?.payload?.auctions || [];
+        const naramonAuctions = naramonJson?.payload?.auctions || [];
 
-    const combinedAuctions = [
-        ...maduraiAuctions,
-        ...vazarinAuctions,
-        ...naramonAuctions
-    ];
+        const combinedAuctions = [
+            ...maduraiAuctions,
+            ...vazarinAuctions,
+            ...naramonAuctions
+        ];
 
-    return {
-        payload: {
-            auctions: combinedAuctions
-        }
-    };
+        return {
+            payload: {
+                auctions: combinedAuctions
+            }
+        };
+    } catch (error){
+        console.log(error);
+        return error;
+    }
 }
 
 async function processItemContractOrders(orderJson){

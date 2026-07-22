@@ -10,7 +10,9 @@ export async function matchLookup(itemIDsArray) {
         return {
             id: id,
             name: itemLookup[id][0]|| "Unknown Item",
-            slug: itemLookup[id][1]|| "Unknown Slug"
+            slug: itemLookup[id][1]|| "Unknown Slug",
+            icon: itemLookup[id][2]|| "Unknown Icon",
+            image: itemLookup[id][3]|| "Unknown Image"
         };
     }); 
 

@@ -7,12 +7,15 @@ import { useWatchlist } from "../context/WatchlistContext";
 import { Top5OrderBook } from "../components/Top5OrderBook";
 import { getItemData } from "../services/itemdata";
 import { RankSelect } from "../components/RankSelect";
+import { NewOrderForm } from "../components/NewOrderForm";
+import { addOrder } from "../services/api";
 
 export const ItemDetailPage = () => {
     const { slug } = useParams();
     const [localQty, setLocalQty] = useState(1);
     const { addHoldings } = useHoldings();
     const { addWatchlist } = useWatchlist();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
     const {data : itemResponse, isLoading} = useQuery({
@@ -33,8 +36,19 @@ export const ItemDetailPage = () => {
         addHoldings(slug, localQty);
     }
 
+    const handleSubmitOrder = async (updatedOrder) => {
+        try {
+    
+            await addOrder(updatedOrder);    
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     const itemName = itemResponse?.response.itemName;
     const imageURL = itemResponse?.response.imageURL;
+    const itemID = itemResponse?.info.id;
     
     return (
         <div>
@@ -49,6 +63,11 @@ export const ItemDetailPage = () => {
                 <button onClick={handleAddToWatchlist}>Add to Watchlist</button>
                 <button onClick={handleAddToHoldings}>Add to Holdings</button>
             </div>  
+            <button onClick={() => setIsModalOpen(true)}>Create Order</button>
+            {isModalOpen && (
+                <NewOrderForm itemId = {itemID} itemName = {itemName} onClose = {() => setIsModalOpen(false)} onComplete={handleSubmitOrder}/>
+                )
+            }
         </div>
     );
 }

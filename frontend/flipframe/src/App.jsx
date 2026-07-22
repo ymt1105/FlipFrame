@@ -16,15 +16,17 @@ function App() {
   return (
     <BrowserRouter>
       <NavBar></NavBar>
-      <Routes>
-        <Route path="/" element = {<MainPage/>}></Route>
-        <Route path="/item/:slug" element = {<ItemDetailPage/>}></Route>
-        <Route path="/current" element = {<MyPage/>}></Route>
-        <Route path="/holdings" element = {<HoldingsPage/>}></Route>
-        <Route path="/watchlist" element = {<WatchlistPage/>}></Route>
-        <Route path="/riven" element = {<RivenPage/>}></Route>
-        <Route path="/riven/contracts/:slug" element = {<ContractsPage/>}></Route>
-      </Routes>
+      <div className="w-[95vw] max-w-[1200px] mx-auto pt-6">
+        <Routes>
+          <Route path="/" element = {<MainPage/>}></Route>
+          <Route path="/item/:slug" element = {<ItemDetailPage/>}></Route>
+          <Route path="/current" element = {<MyPage/>}></Route>
+          <Route path="/holdings" element = {<HoldingsPage/>}></Route>
+          <Route path="/watchlist" element = {<WatchlistPage/>}></Route>
+          <Route path="/riven" element = {<RivenPage/>}></Route>
+          <Route path="/riven/contracts/:slug" element = {<ContractsPage/>}></Route>
+        </Routes>
+      </div>
     </BrowserRouter>
   )
 }

@@ -129,14 +129,15 @@ export async function addOrder(payload){
             console.error(`API Error (${response.status}):`, responseJson);
             throw new Error(responseJson.error || `Server responded with status ${response.status}`);
         }
+        return responseJson;
     } catch(err){
         console.error("Operation failed:", err.message);    
     }
 }
 
-export async function editOrder(payload, id){
+export async function editOrder(payload, orderid){
     try {
-        const modifiedURL = `${baseURL}/order/${id}`;
+        const modifiedURL = `${baseURL}/order/${orderid}`;
 
         const response = await fetch(modifiedURL, 
         {
@@ -149,9 +150,10 @@ export async function editOrder(payload, id){
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }
 
-        console.log("Success:", responseJson);
+        return responseJson;
     } catch (err) {
         console.error("Operation failed:", err.message);    
+        return err;
     }
     
 }
@@ -224,8 +226,10 @@ export async function getLookUpSheet(){
 // console.log(payload);
 // await addOrder(payload);
 
-// // test updating orders
+// // // test updating orders
+// const test_slug = "hammer_shot"
 // const orderID = await getOrderID(test_slug);
+// console.log(orderID);
 // const itemID = await getItemID(test_slug);
 // const payload = await createEditPayload(50, 1);
 // await editOrder(payload, orderID);

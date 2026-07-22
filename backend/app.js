@@ -35,7 +35,7 @@ router
     .get(control.returnRivenOrders)
 
 router
-    .route('/order/:id')
+    .route('/order/:orderid')
     .delete(control.deleteSingle)
     .patch(control.patchOrder)
     

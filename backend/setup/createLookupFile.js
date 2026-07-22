@@ -18,7 +18,10 @@ async function createLookupFile(){
             const itemID = item.id
             const itemSlug = item.slug;
             const tags = item.tags
-            lookupJson[itemID] = [itemName, itemSlug, [tags]];
+            const baseURL = "https://warframe.market/static/assets/"
+            const itemIcon = baseURL+item.i18n.en.icon;
+            const itemThumb = baseURL+item.i18n.en.thumb;
+            lookupJson[itemID] = [itemName, itemSlug, [tags], itemIcon, itemThumb];
             
         }
         const jsonString = JSON.stringify(lookupJson, null, 2);
@@ -49,7 +52,10 @@ async function createWeaponLookupFile(){
             const itemID = item.id
             const itemSlug = item.slug;
             const rivenType = item.rivenType
-            lookupJson[itemID] = [itemName, itemSlug, rivenType];
+            const itemIcon = item.i18n.en.icon;
+            const itemThumb = item.i18n.en.thumb;
+
+            lookupJson[itemID] = [itemName, itemSlug, rivenType, itemIcon, itemThumb];
             
         }
         const jsonString = JSON.stringify(lookupJson, null, 2);

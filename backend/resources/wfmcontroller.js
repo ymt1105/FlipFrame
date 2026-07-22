@@ -22,7 +22,9 @@ export async function deleteAllOrders (req, res) {
 }
 export async function deleteSingle (req, res) {
     try {
-        const data = await task.deleteSingleOrder();
+        const orderid = req.params.orderid;
+
+        const data = await task.deleteSingleOrder(orderid);
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
@@ -41,11 +43,19 @@ export async function newOrder (req, res) {
 
 export async function patchOrder (req, res) {
     try {
-        const id = req.params.id;
-        const { platinum, quantity, visible} = req.body;
-        
-        const payload = await task.createEditPayload(platinum, quantity, visible);
-        const data = await task.editOrder(payload, id);
+        const orderid  = req.params.orderid;
+        const { platinum, quantity} = req.body;
+
+        const updates = {};
+        if (platinum !== undefined) updates.platinum = platinum;
+        if (quantity !== undefined) updates.quantity = quantity;
+
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ error: "No valid fields provided for update" });
+        }
+        const payload = await task.createEditPayload(platinum, quantity);
+        const data = await task.editOrder(payload, orderid);
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
@@ -159,3 +169,4 @@ export async function getAllContracts(req, res){
         res.status(500).json({ error: error.message})
     }
 }
+

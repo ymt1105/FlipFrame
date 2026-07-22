@@ -31,9 +31,13 @@ export const HoldingsProvider = ({children}) => {
     }
 
 
-
+    const deleteAllHoldings = () => {
+        localStorage.remove("Holdings");
+        setWatchlist([])
+        return;
+    }
     return (
-        <HoldingsContext.Provider value={{ holdings, setHoldings, addHoldings }}>
+        <HoldingsContext.Provider value={{ holdings, setHoldings, addHoldings, deleteAllHoldings }}>
             {children}
         </HoldingsContext.Provider>
     );

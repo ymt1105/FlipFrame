@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom"
-import { BumpButton } from "./BumpButton";
 export const NavBar = () => {
     return (
         <div>
@@ -34,7 +33,6 @@ export const NavBar = () => {
                     Riven Search
                 </NavLink>
             </div>
-            <BumpButton/>
         </div>
     );
 }
