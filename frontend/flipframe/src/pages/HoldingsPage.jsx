@@ -1,3 +1,4 @@
+import { DeleteAllHoldingsButton } from "../components/DeleteAllHoldingsButton";
 import { HoldingsCard } from "../components/HoldingsCard";
 import { useHoldings } from "../context/HoldingsContext"
 
@@ -8,6 +9,7 @@ export const HoldingsPage = () => {
         const currentAssetValuation = "0"
         return (
                 <div>
+                        <DeleteAllHoldingsButton/>
                         <div>Total Assets: {currentAssetValuation} Platinum</div>
                         <div className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6 py-6">   
                         {Object.entries(holdings).map((item) => {

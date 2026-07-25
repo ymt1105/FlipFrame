@@ -32,7 +32,7 @@ export const HoldingsProvider = ({children}) => {
 
 
     const deleteAllHoldings = () => {
-        localStorage.remove("Holdings");
+        localStorage.removeItem("Holdings");
         setWatchlist([])
         return;
     }

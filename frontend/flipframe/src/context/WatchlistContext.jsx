@@ -25,15 +25,15 @@ export const WatchlistProvider = ({children}) => {
             return uniqueWatchlist;
         })
     }
-    const deleteAllTickers = () => {
-        localStorage.remove("Watchlist");
+    const deleteAllWatchlist = () => {
+        localStorage.removeItem("Watchlist");
         setWatchlist([])
         return;
     }
 
     
     return (
-        <WatchlistContext.Provider value={{ watchlist, setWatchlist, addWatchlist, deleteAllTickers }}>
+        <WatchlistContext.Provider value={{ watchlist, setWatchlist, addWatchlist, deleteAllWatchlist }}>
             {children}
         </WatchlistContext.Provider>
     );
