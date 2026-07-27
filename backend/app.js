@@ -9,53 +9,45 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-router
-    .route('/order')
+//order bump
+router.route('/orders/bump')
+    .post(control.bump);
+
+//order endpoints
+router.route('/orders')
     .get(control.fetchAllOrders)
-    .delete(control.deleteAllOrders)
     .post(control.newOrder)
-router
-    .route('/order/bump')
-    .get(control.bump)
-router
-    .route('/order/item/:slug')
-    .get(control.retreiveOrdersOnItem)
+    .delete(control.deleteAllOrders);
 
-router
-    .route('/order/item/:slug/top')
-    .get(control.retreiveTopOrdersItemRank)
-
-router
-    router 
-    .route('/order/riven')
-    .get(control.getAllContracts)
-    
-router 
-    .route('/order/riven/:slug')
-    .get(control.returnRivenOrders)
-
-router
-    .route('/order/:orderid')
-    .delete(control.deleteSingle)
+router.route('/orders/:orderid')
     .patch(control.patchOrder)
-    
-router
-    .route('/item/:name')
-    .get(control.itemSearch)
+    .delete(control.deleteSingle);
 
-router
-    .route('/lookup')
+//item hierarchies
+router.route('/items/lookup')
     .get(control.returnLookUpSheet)
-    .post(control.lookupID)
-router
-    .route('/riven/lookup')
-    .get(control.returnRivenLookUpSheet)
+    .post(control.lookupID);
 
-router
-    .route('/JWT')
-    .get(control.JWT)
+router.route('/items/:slug')
+    .get(control.itemSearch);
 
+router.route('/items/:slug/orders')
+    .get(control.retreiveOrdersOnItem);
 
+router.route('/items/:slug/orders/top')
+    .get(control.retreiveTopOrdersItemRank);
+
+//riven endpoints
+router.route('/rivens')
+    .get(control.getAllContracts);
+
+router.route('/rivens/lookup')
+    .get(control.returnRivenLookUpSheet);
+
+router.route('/rivens/weapons/:slug')
+    .get(control.returnRivenOrders);
+
+app.use('/api', router);
 app.use(router);
 
 const API_URL = process.env.VITE_API_URL

@@ -17,7 +17,8 @@ export const jwt = process.env.JWT;
 export const user = process.env.USER;
 export const headers = {
     "Authorization": `Bearer ${jwt}`, 
-    "Content-Type": "application/json" 
+    "Content-Type": "application/json",
+    'User-Agent': 'FlipFrame (github: ymt1105)'
 };
 
 export async function getAllOrders(){

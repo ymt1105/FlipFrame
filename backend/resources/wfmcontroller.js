@@ -1,8 +1,25 @@
 import * as task from './wfmtasks.js';
 import { matchLookup } from './matchLookup.js';
 import * as riven from './riventasks.js';
+import { response } from 'express';
 //express friendly functions
 
+
+async function testIfMaxRate (response){
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("text/html")) {
+        const error = new Error("Warframe Market is currently rate-limiting requests or sending Cloudflare challenges.");
+        error.status = 429;
+        return error;
+    }
+
+    if (!response.ok) {
+        const error = new Error(`Warframe Market API error: ${response.statusText}`);
+        error.status = response.status;
+        return error;
+    }
+    return response
+}
 export async function fetchAllOrders (req, res) {
     try {
         const data = await task.getAllOrders();
@@ -59,16 +76,6 @@ export async function patchOrder (req, res) {
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
-    }
-}
-
-
-export async function JWT (req, res) {
-    try {
-        const data = await task.getJWT();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: error.message});
     }
 }
 
