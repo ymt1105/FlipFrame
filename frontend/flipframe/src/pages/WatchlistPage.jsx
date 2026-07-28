@@ -1,5 +1,5 @@
-import { DeleteAllWatchlistButton } from "../components/DeleteAllWatchlistButton";
-import { TickerCard } from "../components/TickerCard"
+import { DeleteAllWatchlistButton } from "../features/watchlist/DeleteAllWatchlistButton";
+import { WatchlistCard } from "../features/watchlist/WatchlistCard"
 import { useWatchlist} from "../context/WatchlistContext"
 
 export const WatchlistPage = () => {
@@ -11,7 +11,7 @@ export const WatchlistPage = () => {
             <ul>
                 {watchlist.map((itemSlug) => (
                     <li key = {itemSlug} className="py-2">
-                        <TickerCard 
+                        <WatchlistCard 
                             itemSlug={itemSlug}
                         />
                     </li>

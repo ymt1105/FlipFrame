@@ -2,9 +2,9 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getItemContracts } from "../services/api";
-import { RivenCard } from "../components/RivenCard";
-import { StatusSelect } from "../components/StatusSelect";
-import { RivenAutoCompleteSearch } from "../components/RivenAutoCompleteSearch.jsx"
+import { RivenCard } from "../features/rivens/RivenCard";
+import { StatusSelect } from "../features/ui/StatusSelect";
+import { RivenAutoCompleteSearch } from "../features/rivens/RivenAutoCompleteSearch.jsx"
 
 export const ContractsPage = () => {
     const { slug } = useParams();

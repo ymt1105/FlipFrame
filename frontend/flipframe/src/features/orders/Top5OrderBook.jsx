@@ -1,6 +1,6 @@
-import { getItemData } from "../services/itemdata";
+import { getItemData } from "../../services/itemdata";
 import { useState, useEffect } from "react";
-import { RankSelect } from "./RankSelect";
+import { RankSelect } from "../ui/RankSelect";
 
 export const Top5OrderBook = ({ slug }) => {
     const [priceData, setPriceData] = useState(null);

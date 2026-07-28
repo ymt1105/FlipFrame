@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { EditOrderForm } from "./EditOrderForm";
-import { editOrder } from "../services/api";
+import { editOrder } from "../../services/api";
 
 export const OrderCard = ({ orderData, itemInfo = {} }) => {
   const [currentOrder, setCurrentOrder] = useState(orderData);

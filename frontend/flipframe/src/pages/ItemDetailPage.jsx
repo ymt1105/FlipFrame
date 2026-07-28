@@ -1,13 +1,13 @@
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query";
-import { AddItemControls } from "../components/AddItemControls";
+import { AddItemControls } from "../features/ui/AddItemControls";
 import { useState } from "react";
 import { useHoldings } from "../context/HoldingsContext"
 import { useWatchlist } from "../context/WatchlistContext";
-import { Top5OrderBook } from "../components/Top5OrderBook";
+import { Top5OrderBook } from "../features/orders/Top5OrderBook";
 import { getItemData } from "../services/itemdata";
-import { RankSelect } from "../components/RankSelect";
-import { NewOrderForm } from "../components/NewOrderForm";
+import { RankSelect } from "../features/ui/RankSelect";
+import { NewOrderForm } from "../features/orders/NewOrderForm";
 import { addOrder } from "../services/api";
 
 export const ItemDetailPage = () => {

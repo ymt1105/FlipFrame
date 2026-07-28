@@ -1,4 +1,4 @@
-import { useHoldings } from "../context/HoldingsContext"
+import { useHoldings } from "../../context/HoldingsContext"
 export const DeleteAllHoldingsButton = () => {
     const {deleteAllHoldings} = useHoldings();
     return (

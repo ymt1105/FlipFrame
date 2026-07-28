@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react';
 import { getAllOrders, lookupItemArray, getAllContracts } from '../services/api';
-import { RivenCard } from '../components/RivenCard';
-import { OrderCard } from '../components/OrderCard';
+import { RivenCard } from '../features/rivens/RivenCard';
+import { OrderCard } from '../features/orders/OrderCard';
 import {BumpButton} from '../components/BumpButton'
 
 export const MyPage = () => {

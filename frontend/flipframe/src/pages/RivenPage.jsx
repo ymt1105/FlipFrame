@@ -1,4 +1,4 @@
-import { RivenAutoCompleteSearch } from "../components/RivenAutoCompleteSearch.jsx"
+import { RivenAutoCompleteSearch } from "../features/rivens/RivenAutoCompleteSearch.jsx"
 
 export const RivenPage = () => {
     return (

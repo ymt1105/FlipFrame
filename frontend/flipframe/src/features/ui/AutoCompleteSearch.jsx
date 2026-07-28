@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { getRivenLookup } from "../services/api";
+import { getLookup } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
-export const RivenAutoCompleteSearch = () => {
+export const AutoCompleteSearch = () => {
     const [lookupData, setLookupData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
@@ -17,7 +17,7 @@ export const RivenAutoCompleteSearch = () => {
     useEffect(() => {
         const fetchLookup = async () => {
             try {
-                const lookup = await getRivenLookup();
+                const lookup = await getLookup();
                 setLookupData(lookup);
             } catch (error) {
                 console.error("Failed to load lookup data:", error);
@@ -63,7 +63,7 @@ export const RivenAutoCompleteSearch = () => {
             const targetItem = allItems.find(([name]) => name === itemName);
             
             if (targetItem) {
-                navigate(`/riven/contracts/${targetItem[1]}`);
+                navigate(`/item/${targetItem[1]}`);
             } else {
                 console.log("No items matched that search phrase.");
             }
@@ -95,10 +95,10 @@ export const RivenAutoCompleteSearch = () => {
     }
 
     return (
-        <div className="relative">
+        <div className="relative"> {/* Added relative container so absolute dropdown positions correctly */}
             <form onSubmit={(e) => e.preventDefault()}>
                 <label className="block">
-                    <span className="block text-sm font-medium text-gray-700">Weapon Riven Search</span>
+                    <span className="block text-sm font-medium text-gray-700">Item Search</span>
                     <input 
                         name="input" 
                         value={formData.input} 

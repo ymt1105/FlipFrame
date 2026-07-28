@@ -1,5 +1,5 @@
-import { DeleteAllHoldingsButton } from "../components/DeleteAllHoldingsButton";
-import { HoldingsCard } from "../components/HoldingsCard";
+import { DeleteAllHoldingsButton } from "../features/holdings/DeleteAllHoldingsButton";
+import { HoldingsCard } from "../features/holdings/HoldingsCard";
 import { useHoldings } from "../context/HoldingsContext"
 
 

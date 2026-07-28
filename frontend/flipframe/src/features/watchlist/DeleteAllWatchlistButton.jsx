@@ -1,4 +1,4 @@
-import {useWatchlist} from "../context/WatchlistContext"
+import {useWatchlist} from "../../context/WatchlistContext"
 export const DeleteAllWatchlistButton = () => {
     const {deleteAllWatchlist} = useWatchlist();
     return (

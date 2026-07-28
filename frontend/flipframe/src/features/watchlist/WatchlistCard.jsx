@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { Top5OrderBook } from './Top5OrderBook'
-import { getItemData } from '../services/itemdata'
-export const TickerCard = ({itemSlug}) => {
+import { Top5OrderBook } from '../orders/Top5OrderBook'
+import { getItemData } from '../../services/itemdata'
+export const WatchlistCard = ({itemSlug}) => {
     const { data: image, isLoading} = useQuery({
         queryKey: ["item", itemSlug],
         queryFn: () => getItemData(itemSlug).then(data => data.response.imageURL)
