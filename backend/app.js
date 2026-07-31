@@ -17,7 +17,7 @@ router.route('/orders/bump')
 router.route('/orders')
     .get(control.fetchAllOrders)
     .post(control.newOrder)
-    .delete(control.deleteAllOrders);
+    .delete(control.deleteAllCurrentUserOrders);
 
 router.route('/orders/:orderid')
     .patch(control.patchOrder)

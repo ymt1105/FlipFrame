@@ -30,6 +30,7 @@ export const RivenCard = ({rivenData}) => {
                         })}
                     </ul>
                     <p>Rank: {rivenDetails.rank}</p>
+                    <p>Polarity: {rivenDetails.polarity}</p>
                     <p>Rerolls: {rivenDetails.reroll}</p>
                 </div>
                 <div>

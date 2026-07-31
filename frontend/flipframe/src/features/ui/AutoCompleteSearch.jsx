@@ -95,12 +95,13 @@ export const AutoCompleteSearch = () => {
     }
 
     return (
-        <div className="relative"> {/* Added relative container so absolute dropdown positions correctly */}
+        <div className="relative">
             <form onSubmit={(e) => e.preventDefault()}>
                 <label className="block">
                     <span className="block text-sm font-medium text-gray-700">Item Search</span>
                     <input 
                         name="input" 
+                        placeholder="Search Item Name"
                         value={formData.input} 
                         onChange={handleChange} 
                         onKeyDown={handleKeyDown}

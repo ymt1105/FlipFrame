@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { EditOrderForm } from "./EditOrderForm";
 import { editOrder } from "../../services/api";
+import { Link } from "react-router-dom";
 
 export const OrderCard = ({ orderData, itemInfo = {} }) => {
   const [currentOrder, setCurrentOrder] = useState(orderData);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { id, type, perTrade, platinum, quantity, rank, visible } = currentOrder;
-  const { name, image } = itemInfo;
+  const { name, image, slug} = itemInfo;
 
   const handleSaveEditedOrder = async (updatedFormData) => {
     try {
@@ -24,7 +25,7 @@ export const OrderCard = ({ orderData, itemInfo = {} }) => {
 
   return (
     <div className="bg-white p-4 border rounded shadow-md flex flex-col h-full">
-      <h2 className="text-lg font-bold mb-2">{name}</h2>
+      <Link to={`/item/${slug}`} className="text-lg font-bold mb-2">{name}</Link>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <img className="max-w-40 object-contain" src={image} alt={name} />

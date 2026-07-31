@@ -102,6 +102,7 @@ export const RivenAutoCompleteSearch = () => {
                     <input 
                         name="input" 
                         value={formData.input} 
+                        placeholder="Search Weapon Name"
                         onChange={handleChange} 
                         onKeyDown={handleKeyDown}
                         autoComplete="off"

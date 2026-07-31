@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react';
-import { getAllOrders, lookupItemArray, getAllContracts } from '../services/api';
+import { getAllOrders, lookupItemArray, getAllContracts, bump } from '../services/api';
 import { RivenCard } from '../features/rivens/RivenCard';
 import { OrderCard } from '../features/orders/OrderCard';
-import {BumpButton} from '../components/BumpButton'
+import { GeneralButton } from '../components/GeneralButton';
 
 export const MyPage = () => {
     const { data: items, isLoading: isOrdersLoading, error: ordersError, isSuccess } = useQuery({
@@ -43,8 +43,8 @@ export const MyPage = () => {
     const auctions = contracts?.payload?.auctions;
     return (
         <div>
-            <h1>Product List</h1>
-            <BumpButton/>
+            <h1 className = "text-6xl font-bold py-5">My Orders</h1>
+            <GeneralButton onClickMethod={bump} displayLabel={"Bump all my orders"}/>
             {isLookupLoading && <p>Loading extra details...</p>}
             
             <ul>

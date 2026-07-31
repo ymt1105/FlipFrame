@@ -22,16 +22,16 @@ async function testIfMaxRate (response){
 }
 export async function fetchAllOrders (req, res) {
     try {
-        const data = await task.getAllOrders();
+        const data = await task.getAllCurrentUserOrders();
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
     }
 }
 
-export async function deleteAllOrders (req, res) {
+export async function deleteAllCurrentUserOrders (req, res) {
     try {
-        const data = await task.deleteAllOrders();
+        const data = await task.deleteAllCurrentUserOrders();
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
@@ -51,7 +51,7 @@ export async function deleteSingle (req, res) {
 export async function newOrder (req, res) {
     try {
         const payload = await task.createPayload(req.body);
-        const data = await task.addOrder(payload);
+        const data = await task.createNewOrder(payload);
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message})
@@ -92,7 +92,7 @@ export async function lookupID (req, res){
 export async function itemSearch (req, res){
     try {
         const slugorname = req.params.name;
-        const data = await task.getItem(slugorname);
+        const data = await task.getItemData(slugorname);
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message});
@@ -101,7 +101,7 @@ export async function itemSearch (req, res){
 
 export async function bump (req, res){
     try{
-        const data = await task.bumpOrders();
+        const data = await task.bumpAllCurrOrders();
         res.json(data);
     } catch(error) {
         res.status(500).json({ error: error.message});
@@ -111,7 +111,7 @@ export async function bump (req, res){
 export async function retreiveOrdersOnItem (req, res){
     try{
         const slug = req.params.slug;
-        const data = await task.getItem(slug)
+        const data = await task.getItemData(slug)
         res.json(data);
     } catch(error){
         res.status(500).json({ error: error.message});

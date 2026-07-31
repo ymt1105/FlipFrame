@@ -14,7 +14,7 @@ async function retrieveItemOrders() {
     let orderbook = {}
     for (const [name, details] of Object.entries(test_data)) {
         const slug = details[0];
-        const orders = await getItem(slug);
+        const orders = await getItemData(slug);
         const simplifiedOrders = await destructureOrders(orders);
         await sleep(400);
         orderbook = {...orderbook, simplifiedOrders};        
@@ -22,7 +22,7 @@ async function retrieveItemOrders() {
     return orderbook
 }
 
-export async function getItem(slug){
+export async function getItemData(slug){
     try {
         const modifiedURL = `${baseURL}/orders/item/${slug}`;
         const response = await fetch(modifiedURL);

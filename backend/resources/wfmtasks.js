@@ -21,7 +21,7 @@ export const headers = {
     'User-Agent': 'FlipFrame (github: ymt1105)'
 };
 
-export async function getAllOrders(){
+export async function getAllCurrentUserOrders(){
     const modifiedURL = `${baseURL}/orders/user/${user}`;
     const response = await fetch(modifiedURL, headers);
     const responseJson = await response.json();        
@@ -29,8 +29,8 @@ export async function getAllOrders(){
     return responseJson;
 }
 
-export async function deleteAllOrders(){
-    const allUserOrders = await getAllOrders();
+export async function deleteAllCurrentUserOrders(){
+    const allUserOrders = await getAllCurrentOrders();
     console.log(allUserOrders);
     for (const order of Object.values(allUserOrders.data)){
         const orderid = order.id;
@@ -104,8 +104,9 @@ export async function getItemName(itemID){
     const slug = responseJson.data.slug;
     return slug;
 }
+
 export async function getOrderID(itemName){
-    const allOrders = await getAllOrders();
+    const allOrders = await getAllCurrentOrders();
     for (const order of Object.values(allOrders.data)){
         const curritemID = order.itemId
         const curritemName = await getItemName(curritemID);
@@ -115,7 +116,8 @@ export async function getOrderID(itemName){
     }
 
 }
-export async function addOrder(payload){
+
+export async function createNewOrder(payload){
     try{
         const modifiedURL = `${baseURL}/order`;
 
@@ -159,7 +161,7 @@ export async function editOrder(payload, orderid){
     
 }
 
-export async function getItem(slug){
+export async function getItemData(slug){
     try {
         const modifiedURL = `${baseURL}/item/${slug}`;
         const response = await fetch(modifiedURL);
@@ -174,9 +176,10 @@ export async function getItem(slug){
     
 }
 
-export async function bumpOrders(){
+export async function bumpAllCurrOrders(){
     try {
-        const allOrders = await getAllOrders();
+        const allOrders = await getAllCurrentUserOrders();
+        console.log(allOrders);
         for (const order of Object.values(allOrders.data)){
             const payload = await createEditPayload(order.platinum, order.quantity);
             await editOrder(payload, order.id);
@@ -210,34 +213,3 @@ export async function getLookUpSheet(){
     }
 
 }
-
-
-// const test_slug = "arcane_avenger"
-// test adding orders
-// const itemID = await getItemID(test_slug);
-// const payload = await createPayload({
-//     itemId: itemID,    
-//     type: "sell",         
-//     platinum: 100,      
-//     quantity: 12,    
-//     visible: true, 
-//     perTrade: 6,
-// 	rank: 5 
-// });
-// console.log(payload);
-// await addOrder(payload);
-
-// // // test updating orders
-// const test_slug = "hammer_shot"
-// const orderID = await getOrderID(test_slug);
-// console.log(orderID);
-// const itemID = await getItemID(test_slug);
-// const payload = await createEditPayload(50, 1);
-// await editOrder(payload, orderID);
-
-// // //test deleting all orders
-// await deleteAllOrders();
-
-// createItemNameLookupFile();
-
-// console.log(await matchLookup(["5510859ce779897292ba1efc"]))
