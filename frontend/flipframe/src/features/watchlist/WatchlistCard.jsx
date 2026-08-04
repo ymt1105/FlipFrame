@@ -10,7 +10,7 @@ export const WatchlistCard = ({itemSlug}) => {
         <div>
             <div className = "bg-white p-4 border rounded shadow-md flex flex-col h-full">
                 <div>
-                    <h2>{itemSlug}</h2>
+                    <h2 className="text-lg font-bold mb-2">{itemSlug}</h2>
                     <img src={image} className='max-w-40'/>
                 </div>
                 <Top5OrderBook 

@@ -14,7 +14,7 @@ export const WatchlistProvider = ({children}) => {
         const handleWatchListChanges = (event) => {
 
         }
-    })
+    });
 
     const addWatchlist = (slug) => {
         setWatchlist((prevWatchlist) => {

@@ -9,6 +9,7 @@ import { getItemData } from "../services/itemdata";
 import { RankSelect } from "../features/ui/RankSelect";
 import { NewOrderForm } from "../features/orders/NewOrderForm";
 import { addOrder } from "../services/api";
+import { GeneralButton } from "../components/GeneralButton"
 
 export const ItemDetailPage = () => {
     const { slug } = useParams();
@@ -60,10 +61,10 @@ export const ItemDetailPage = () => {
                 onChange = {setLocalQty}
             />
             <div className="grid grid-cols-2">
-                <button onClick={handleAddToWatchlist}>Add to Watchlist</button>
-                <button onClick={handleAddToHoldings}>Add to Holdings</button>
+                <GeneralButton onClickMethod={handleAddToWatchlist} displayLabel={"Add to Watchlist"}/>
+                <GeneralButton onClickMethod={handleAddToHoldings} displayLabel={"Add to Holdings"}/>
             </div>  
-            <button onClick={() => setIsModalOpen(true)}>Create Order</button>
+            <GeneralButton onClickMethod={() => setIsModalOpen(true)} displayLabel={"Create Order"}/>
             {isModalOpen && (
                 <NewOrderForm itemId = {itemID} itemName = {itemName} onClose = {() => setIsModalOpen(false)} onComplete={handleSubmitOrder}/>
                 )

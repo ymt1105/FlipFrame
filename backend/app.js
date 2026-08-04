@@ -13,6 +13,10 @@ app.use(express.static('public'));
 router.route('/orders/bump')
     .post(control.bump);
 
+
+router.route('/orders/maximise')
+    .post(control.maximisePrices);
+
 //order endpoints
 router.route('/orders')
     .get(control.fetchAllOrders)

@@ -177,3 +177,11 @@ export async function getAllContracts(req, res){
     }
 }
 
+export async function maximisePrices(req, res){
+    try{
+        const data = await task.maximiseCurrSellOrders();
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message})
+    }
+}

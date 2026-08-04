@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+// add more error handliing
 export const NewOrderForm = ({ itemId, itemName, onClose, onComplete }) => {
   const [formData, setFormData] = useState({
     type: "sell",
@@ -27,7 +27,6 @@ export const NewOrderForm = ({ itemId, itemName, onClose, onComplete }) => {
       setError("Missing required fields: item, type, platinum, and quantity are required.");
       return;
     }
-
     const payload = {
       itemId,
       type: formData.type,

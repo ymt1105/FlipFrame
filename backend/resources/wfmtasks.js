@@ -191,6 +191,27 @@ export async function bumpAllCurrOrders(){
     }
 }
 
+export async function maximiseCurrSellOrders(){
+    try {
+        const allOrders = await getAllCurrentUserOrders();
+        const sellOrders = allOrders.data.filter(item => item.type == 'sell');
+        for (const order of Object.values(sellOrders)){
+            console.log(order)
+            const oldPlatinumPrice = order.platinum;
+            const oldOrderRank = parseInt(order.rank) || null
+            const topSellOrders = await getTopOrdersOnRank(order.itemId, oldOrderRank)
+            await sleep(300);
+            const cheapestSellOrder = topSellOrders.data.sell[0].platinum
+            const newPlatinumAmount = Math.max(cheapestSellOrder, oldPlatinumPrice)
+            const payload = await createEditPayload(newPlatinumAmount, order.quantity);
+            await editOrder(payload, order.id);
+            await sleep(300);
+        }
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export async function getTopOrdersOnRank(item_slug, rank){
     try {
         const response = await fetch(

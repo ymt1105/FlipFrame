@@ -13,7 +13,7 @@ export const HoldingsProvider = ({children}) => {
     useEffect(() => {
         const handleHoldingsChanges = (event) => {
         }
-    })
+    });
 
     const addHoldings = (slug, quantity) => {
         setHoldings((prevHoldings) => {

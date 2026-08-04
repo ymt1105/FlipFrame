@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react';
-import { getAllOrders, lookupItemArray, getAllContracts, bump } from '../services/api';
+import { getAllOrders, lookupItemArray, getAllContracts, bump, maximise } from '../services/api';
 import { RivenCard } from '../features/rivens/RivenCard';
 import { OrderCard } from '../features/orders/OrderCard';
 import { GeneralButton } from '../components/GeneralButton';
@@ -41,29 +41,59 @@ export const MyPage = () => {
     if (ordersError) return <div>Error: {ordersError.message}</div>;
 
     const auctions = contracts?.payload?.auctions;
+    let sellOrders = [];
+    let buyOrders = [];
+    const filteredOrders = items?.data.filter(order => {
+        if (order.type == "buy"){
+            buyOrders.push(order)
+        } else {
+            sellOrders.push(order)
+        }
+        return order
+    });
+
     return (
         <div>
             <h1 className = "text-6xl font-bold py-5">My Orders</h1>
-            <GeneralButton onClickMethod={bump} displayLabel={"Bump all my orders"}/>
+            <div className='grid grid-cols-2'>
+                <GeneralButton className="w-fill" onClickMethod={bump} displayLabel={"Bump all my orders"}/>
+                <GeneralButton onClickMethod={maximise} displayLabel={"Maximise All Sell Orders"}/>
+            </div>
             {isLookupLoading && <p>Loading extra details...</p>}
+            <div className='grid grid-cols-2'>
+                <div>
+                    <h2 className='text-xl font-bold bg-rose-300'>Sell</h2>
+                    <ul className='m-5 flex flex-col gap-5'>
+                        {sellOrders.map((item) => {
+                            const lookupResult = lookupMap.get(String(item.itemId));
+                            return (
+                                <OrderCard key = {item.id} orderData = {item} itemInfo={lookupResult}/>
+                            );
+                        })}
+                        {auctions?.map((contract) => {
+                            return (
+                                <RivenCard 
+                                    key = {contract.id} 
+                                    rivenData = {contract}
+                                />
+                            )
+                        })}
+                    </ul>
+                </div>
+                <div>
+                    <h2 className='text-xl font-bold bg-green-300'>Buy</h2>
+
+                    <ul className='m-5 flex flex-col gap-5'>
+                        {buyOrders.map((item) => {
+                            const lookupResult = lookupMap.get(String(item.itemId));
+                            return (
+                                <OrderCard key = {item.id} orderData = {item} itemInfo={lookupResult}/>
+                            );
+                        })}
+                    </ul>
+                </div>
+            </div>
             
-            <ul>
-                {items?.data?.map((item) => {
-                    const lookupResult = lookupMap.get(String(item.itemId));
-                    return (
-                        <OrderCard key = {item.id} orderData = {item} itemInfo={lookupResult}/>
-                    );
-                })}
-                
-            </ul>
-            {auctions?.map((contract) => {
-                return (
-                    <RivenCard 
-                        key = {contract.id} 
-                        rivenData = {contract}
-                    />
-                )
-            })}
         </div>
     )
 }

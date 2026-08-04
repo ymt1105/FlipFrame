@@ -24,8 +24,8 @@ export const OrderCard = ({ orderData, itemInfo = {} }) => {
   };
 
   return (
-    <div className="bg-white p-4 border rounded shadow-md flex flex-col h-full">
-      <Link to={`/item/${slug}`} className="text-lg font-bold mb-2">{name}</Link>
+    <div className="bg-white p-4 border rounded shadow-md flex flex-col h-[300px] w-[550px] shrink-0 overflow-hidden">        
+    <Link to={`/item/${slug}`} className="text-lg font-bold mb-2">{name}</Link>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <img className="max-w-40 object-contain" src={image} alt={name} />

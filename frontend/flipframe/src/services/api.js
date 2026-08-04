@@ -79,3 +79,8 @@ export async function editOrder(orderID, payload) {
     });
     return handleResponse(response, "Failed to update order");
 }
+
+export async function maximise(){
+    const response = await fetch(`${API_URL}/orders/maximise`, { method: 'POST' });
+    return handleResponse(response, "Failed to bump order");
+}

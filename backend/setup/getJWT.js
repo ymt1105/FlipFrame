@@ -9,8 +9,6 @@ config({ path: path.resolve(__dirname, '../../.env') });
 export async function getJWT(){
     const email = process.env.WF_EMAIL;
     const password = process.env.WF_PASS;
-    console.log(email)
-    console.log(password)
     let rep = await fetch("https://api.warframe.market/v1/auth/signin", {
         method: "POST",
         headers: { 

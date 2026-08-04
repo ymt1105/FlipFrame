@@ -1,7 +1,9 @@
 export const AddItemControls = ({value, onChange}) => {
     return (
         <div>
+            <h2>Quantity:</h2>
             <input
+                id="Hi"
                 type="number"
                 min="0"
                 max="20"

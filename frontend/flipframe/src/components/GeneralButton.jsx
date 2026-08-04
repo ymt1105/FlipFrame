@@ -1,8 +1,5 @@
-export const GeneralButton = ({onClickMethod, displayLabel}) => {
-    console.log(onClickMethod);
+export const GeneralButton = ({onClickMethod, displayLabel, type = "button", className = ""}) => {
     return (
-        <div>
-            <button onClick = {onClickMethod} className="flex bg-green-500 p-x-3">{displayLabel}</button>
-        </div>
+        <button type={type} onClick = {onClickMethod} className={`flex bg-green-500 p-x-3 ${className}`}>{displayLabel}</button>
     );
 }
