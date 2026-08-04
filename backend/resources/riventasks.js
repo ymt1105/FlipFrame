@@ -43,7 +43,9 @@ export async function getItemContractOrders(item_slug) {
             ...maduraiAuctions,
             ...vazarinAuctions,
             ...naramonAuctions
-        ];
+        ].sort((a, b) => a.starting_price - b.starting_price);;
+
+        
 
         return {
             payload: {
