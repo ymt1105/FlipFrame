@@ -14,7 +14,6 @@ export const RivenCard = ({rivenData}) => {
     }
     rivenDetails.weapon_name = String(rivenDetails.weapon_name).charAt(0).toUpperCase() + String(rivenDetails.weapon_name).slice(1);
     let counter = 0
-    console.log(rivenData);
     return(
         <div className="bg-white p-4 border rounded shadow-md flex flex-col h-[300px] w-[550px] shrink-0 overflow-hidden">        
             <h2 className="center text-lg font-bold mb-2">{rivenDetails.weapon_name} {rivenDetails.prefix}</h2>
