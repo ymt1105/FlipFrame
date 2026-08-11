@@ -35,7 +35,7 @@ export const OrderCard = ({ orderData, itemInfo = {} }) => {
           <p><strong>Per Trade:</strong> {perTrade}</p>
           <p><strong>Platinum:</strong> {platinum}p</p>
           <p><strong>Total Quantity:</strong> {quantity}x</p>
-          <p><strong>Summed Total Price:</strong> {Number(platinum) * Number(quantity)}</p>
+          <p><strong>Summed Total Price:</strong> {Number(platinum) * (Number(quantity)/Number(perTrade))}</p>
           <p><strong>Rank:</strong> {rank ?? "N/A"}</p>
           <p><strong>Visibility:</strong> {visible ? "True" : "False"}</p>
 
