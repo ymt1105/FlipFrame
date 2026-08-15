@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../../.env') });
+
 export async function getJWT(){
     const email = process.env.WF_EMAIL;
     const password = process.env.WF_PASS;

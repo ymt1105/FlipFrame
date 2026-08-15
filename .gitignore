@@ -4,8 +4,8 @@
 /backend/node_modules
 /backend/testscripts
 /backend/playground
-/backend/resources/itemlookup.json
-/backend/resources/rivenlookup.json
+/backend/jsons
+
 /.env
 
 # Logs

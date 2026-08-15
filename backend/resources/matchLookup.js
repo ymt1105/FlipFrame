@@ -1,4 +1,4 @@
-import itemLookup from './itemlookup.json' with { type: 'json' };
+import itemLookup from '../jsons/itemlookup.json' with { type: 'json' };
 
 export async function matchLookup(itemIDsArray) {
     if (!Array.isArray(itemIDsArray)) {

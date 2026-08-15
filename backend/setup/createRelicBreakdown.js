@@ -2,11 +2,11 @@ import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { writeFile } from 'node:fs/promises';
-
+import { writeFile, mkdir } from 'node:fs/promises';
+//TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../../.env') });
-
+console.time("Setup Duration");
 export const baseURL = "https://stats.alecaframe.com";
 
 export const alecaframeToken = process.env.ALECAFRAME_TOKEN;
@@ -40,6 +40,9 @@ export const refinementChances = {
     }
 };
 
+/* 
+    Get user's relic string from AlecaFrame API
+*/
 async function getRelicString() {
     const modifiedURL = baseURL + "/api/stats/public/getRelicInventory?publicToken=" + encodeURIComponent(alecaframeToken);
     
@@ -53,6 +56,9 @@ async function getRelicString() {
     return data;
 }
 
+/* 
+    Convert the Base64 String into legible english
+*/
 async function translateRelicString(relicString){
     const binaryString = atob(relicString);
     const bytes = new Uint8Array(binaryString.length);
@@ -118,6 +124,9 @@ async function translateRelicString(relicString){
     return { translatedArray, detailedRelicObject };
 }
 
+/*
+
+*/
 async function getRelicContents(relicName){
     const modifiedURL = 'https://api.warframestat.us/items/search/' + encodeURIComponent(relicName);
     const response = await fetch(modifiedURL);
@@ -125,6 +134,9 @@ async function getRelicContents(relicName){
     return responseJson;
 }
 
+/*
+    Get the specified date in a certain formatted for
+*/
 async function getFormattedDate(offset){
     const now = new Date();
     const year = now.getFullYear();
@@ -132,7 +144,9 @@ async function getFormattedDate(offset){
     const day = String(now.getDate() - 1 - offset).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
-
+/*
+    Searches for WFM historic records the JSON, it will go back a few days to ensure that it does not break due to delayed files
+*/
 async function getItemPriceDataSheet(){
     for (let i = 0; i < 3; i++){
         try {
@@ -148,6 +162,9 @@ async function getItemPriceDataSheet(){
     throw new Error("Could not find any price history files from the last 3 days.");
 }
 
+/*
+    Creates an object with the name of the item and the price
+*/
 async function createItemPriceObject(priceData){
     const itemPriceObject = {};
     Object.entries(priceData).forEach(([key, value]) => {
@@ -159,10 +176,16 @@ async function createItemPriceObject(priceData){
     return itemPriceObject;
 }
 
+/*
+    Checks Object to see the price
+*/
 async function lookupPrice(itemName){
     return itemPriceObject[itemName] || 0;
 }
 
+/*
+    Returns how much platinum each relic is worth when opened
+*/
 async function calculateRelicValue(drops, refinementName){
     const unpackedItems = Object.entries(drops).flatMap(([tier, items]) => {
         return Object.entries(items).map(([itemName, price]) => {
@@ -179,7 +202,9 @@ async function calculateRelicValue(drops, refinementName){
     const total = weightedPrices.reduce((accumulator, currentNumber) => accumulator + currentNumber, 0);    
     return total;
 }
-
+/*
+    Calculates the prices of the items inside the relic
+*/
 async function getRelicDropsFromRewards(relicRewards){
     const dropsPrices = {
         "Common" : {},
@@ -204,7 +229,9 @@ async function getRelicDropsFromRewards(relicRewards){
     }
     return dropsPrices;
 }
+/*
 
+*/
 async function getRelicDrops(relic){
     const relicName = relic.fullname;
     const relicInfo = await getRelicContents(relicName);
@@ -214,76 +241,114 @@ async function getRelicDrops(relic){
     return await getRelicDropsFromRewards(relicInfo[0].rewards);
 }
 
-async function createRelicBreakdownFile(){
+/*
+    Create Object with all the required data
+*/
+async function createRelicBreakdown(){
     const relicString = await getRelicString();
-    const {translatedArray, detailedRelicObject} = await translateRelicString(relicString);
+    const { translatedArray, detailedRelicObject } = await translateRelicString(relicString);
     const relicsBreakdown = {
         data: {}
     };
     
-    const datePrinted = await getFormattedDate(0);
-    relicsBreakdown["date_printed"] = datePrinted;
+    relicsBreakdown["date_printed"] = await getFormattedDate(0);
     const refinementNames = Object.keys(refinementChances);
-    const vanguardRelics = ["Vanguard C1", "Vanguard E1", "Vanguard M1", "Vanguard P1"];
+    const validRelics = translatedArray.filter(relic => relic.tier !== "Requiem");
 
-    for (let i = 0; i < translatedArray.length; i++) {
-        const relic = translatedArray[i];
-        
-        if (relic.tier === "Requiem") {
-            continue;
-        }
-        
-        for (let j = 0; j < refinementNames.length; j++) {
-            const refinementName = refinementNames[j];
-            const lookupKey = `${relic.fullname} ${refinementName}`;
-            
+    //process 15 in parallel to speed run execution
+    const batchSize = 15;
+    for (let i = 0; i < validRelics.length; i += batchSize) {
+        const batch = validRelics.slice(i, i + batchSize);
+
+        await Promise.all(batch.map(async (relic) => {
+            const relicName = relic.fullname;
             try {
-                const dropPrices = await getRelicDrops(relic);
-                const relicPrices = await calculateRelicValue(dropPrices, refinementName);
-                
-                const relicDetailed = detailedRelicObject[lookupKey] || {
-                    tier: relic.tier,
-                    count: 0
-                };             
-                relicsBreakdown["data"][lookupKey] = {
-                    price: relicPrices,
-                    quantity: relicDetailed.count
+                const responseJson = await getRelicContents(relicName);
+                if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
+                    return;
+                }
+
+                relicsBreakdown["data"][relicName] = {
+                    Intact: {},
+                    Exceptional: {},
+                    Flawless: {},
+                    Radiant: {}
                 };
-                console.log(`Completed ${lookupKey}`);
+
+                const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
+
+                for (const refinementName of refinementNames) {
+                    const lookupKey = `${relicName} ${refinementName}`;
+                    const relicPrices = await calculateRelicValue(drops, refinementName);
+                    
+                    const relicDetailed = detailedRelicObject[lookupKey] || {
+                        tier: relic.tier,
+                        count: 0
+                    };    
+
+                    relicsBreakdown["data"][relicName][refinementName] = {
+                        price: relicPrices,
+                        quantity: relicDetailed.count
+                    };
+                }
             } catch (err) {
-                console.warn(`Skipping ${lookupKey} due to error: ${err.message}`);
+                console.warn(`Skipping ${relicName} due to error: ${err.message}`);
             }
-        }
+        }));
     }
+
+    const vanguardRelics = ["Vanguard C1", "Vanguard E1", "Vanguard M1", "Vanguard P1"];
     for (const relicName of vanguardRelics) {
         try {
-            console.log(`\nFetching: ${relicName}...`);
             const responseJson = await getRelicContents(relicName);
             if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
                 console.log(`Could not find valid rewards for ${relicName}`);
                 continue;
             }
             
-            const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
-            console.log(`Values for ${relicName}:`);
-            
-            for (const refinement of Object.keys(refinementChances)) {
-                const lookupKey = `${relicName} ${refinement}`
+            relicsBreakdown["data"][relicName] = relicsBreakdown["data"][relicName] || {
+                Intact: {}, Exceptional: {}, Flawless: {}, Radiant: {}
+            };
 
-                const relicValue = await calculateRelicValue(drops, refinement);
-                relicsBreakdown["data"][lookupKey] = {
+            const drops = await getRelicDropsFromRewards(responseJson[0].rewards);            
+            for (const refinementName of refinementNames) {
+                const relicValue = await calculateRelicValue(drops, refinementName);
+                relicsBreakdown["data"][relicName][refinementName] = {
                     price: relicValue,
-                    quantity: 0
-                };
+                    quantity: 999
+                };    
             }
         } catch (error) {
             console.error(`Error processing ${relicName}:`, error.message);
         }
     }
 
-    const filePath = path.join(__dirname, '..', 'resources', 'relicPriceLookup.json');        
-    await writeFile(filePath, JSON.stringify(relicsBreakdown, null, 2), 'utf8');
+    await sortAndWriteFile(relicsBreakdown);
     console.log("Successfully created lookup file");
 }
 
-await createRelicBreakdownFile();
+//
+async function sortAndWriteFile(relicsBreakdown) {
+    try {
+        const sortedRelics = Object.entries(relicsBreakdown.data).sort((a, b) => {
+            const priceA = a[1].price; 
+            const priceB = b[1].price;
+            return priceB - priceA;
+        });
+
+        const sortedObject = {
+            data: Object.fromEntries(sortedRelics)
+        };
+        const filePath = path.join(__dirname, '..', 'jsons', 'relicPriceSortedLookup.json');        
+
+        const dirPath = path.dirname(filePath);
+        await mkdir(dirPath, { recursive: true });
+        await writeFile(filePath, JSON.stringify(sortedRelics, null, 2), 'utf8');
+        console.log("Saved sorted list to relics_sorted.json");
+    } catch (error) {
+        console.error("Error reading or processing the JSON file:", error);
+    }
+}
+
+await createRelicBreakdown();
+console.timeEnd("Setup Duration");

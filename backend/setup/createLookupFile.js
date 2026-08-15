@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, mkdir} from 'node:fs/promises';
 
 
 async function createLookupFile(){
@@ -28,7 +28,10 @@ async function createLookupFile(){
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
 
-        const filePath = path.join(__dirname, '..', 'resources', 'itemlookup.json');        console.log(filePath);
+        const filePath = path.join(__dirname, '..', 'jsons', 'itemlookup.json');
+        const dirPath = path.dirname(filePath);
+        
+        await mkdir(dirPath, { recursive: true }); 
         await writeFile(filePath, jsonString , 'utf8');
         console.log("Successfully created lookup file");
     } catch (err) {
@@ -61,8 +64,10 @@ async function createWeaponLookupFile(){
         const jsonString = JSON.stringify(lookupJson, null, 2);
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-
-        const filePath = path.join(__dirname, '..', 'resources', 'rivenlookup.json');        
+        const filePath = path.join(__dirname, '..', 'jsons', 'rivenlookup.json');   
+        const dirPath = path.dirname(filePath);
+        
+        await mkdir(dirPath, { recursive: true });     
         await writeFile(filePath, jsonString , 'utf8');
         console.log("Successfully created lookup file");
 

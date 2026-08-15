@@ -1,4 +1,4 @@
-import rivenLookup from './rivenlookup.json' with { type: 'json' };
+import rivenLookup from '../jsons/rivenlookup.json' with { type: 'json' };
 
 export async function rivenMatchLookup(itemIDsArray) {
     if (!Array.isArray(itemIDsArray)) {

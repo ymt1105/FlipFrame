@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { sleep } from './sleep.js';
 import { writeFile } from 'node:fs/promises';
 import { stat } from 'node:fs';
-import rivenLookup from './rivenlookup.json' with { type: 'json' };
+import rivenLookup from '../jsons/rivenlookup.json' with { type: 'json' };
 
 
 

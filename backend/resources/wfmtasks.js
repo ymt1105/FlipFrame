@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { sleep } from './sleep.js';
 import { writeFile } from 'node:fs/promises';
-import itemLookup from './itemlookup.json' with { type: 'json' };
+import itemLookup from '../jsons/itemlookup.json' with { type: 'json' };
 import { matchLookup } from './matchLookup.js';
 
 
