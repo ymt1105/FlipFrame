@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { writeFile, mkdir } from 'node:fs/promises';
+import { writeOutJSONFile } from './writeOutJSONFile.js';
 //TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../../.env') });
@@ -248,15 +248,15 @@ async function createRelicBreakdown(){
     const relicString = await getRelicString();
     const { translatedArray, detailedRelicObject } = await translateRelicString(relicString);
     const relicsBreakdown = {
-        data: {}
+        data: {},
     };
     
     relicsBreakdown["date_printed"] = await getFormattedDate(0);
     const refinementNames = Object.keys(refinementChances);
     const validRelics = translatedArray.filter(relic => relic.tier !== "Requiem");
 
-    //process 15 in parallel to speed run execution
-    const batchSize = 15;
+    //process x in parallel to speed up execution
+    const batchSize = 50;
     for (let i = 0; i < validRelics.length; i += batchSize) {
         const batch = validRelics.slice(i, i + batchSize);
 
@@ -276,7 +276,9 @@ async function createRelicBreakdown(){
                 };
 
                 const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
-
+                relicsBreakdown["data"][relicName] = {
+                    drops: drops
+                }
                 for (const refinementName of refinementNames) {
                     const lookupKey = `${relicName} ${refinementName}`;
                     const relicPrices = await calculateRelicValue(drops, refinementName);
@@ -290,6 +292,7 @@ async function createRelicBreakdown(){
                         price: relicPrices,
                         quantity: relicDetailed.count
                     };
+
                 }
             } catch (err) {
                 console.warn(`Skipping ${relicName} due to error: ${err.message}`);
@@ -322,32 +325,8 @@ async function createRelicBreakdown(){
             console.error(`Error processing ${relicName}:`, error.message);
         }
     }
-
-    await sortAndWriteFile(relicsBreakdown);
+    await writeOutJSONFile(relicsBreakdown, __dirname);
     console.log("Successfully created lookup file");
-}
-
-//
-async function sortAndWriteFile(relicsBreakdown) {
-    try {
-        const sortedRelics = Object.entries(relicsBreakdown.data).sort((a, b) => {
-            const priceA = a[1].price; 
-            const priceB = b[1].price;
-            return priceB - priceA;
-        });
-
-        const sortedObject = {
-            data: Object.fromEntries(sortedRelics)
-        };
-        const filePath = path.join(__dirname, '..', 'jsons', 'relicPriceSortedLookup.json');        
-
-        const dirPath = path.dirname(filePath);
-        await mkdir(dirPath, { recursive: true });
-        await writeFile(filePath, JSON.stringify(sortedRelics, null, 2), 'utf8');
-        console.log("Saved sorted list to relics_sorted.json");
-    } catch (error) {
-        console.error("Error reading or processing the JSON file:", error);
-    }
 }
 
 await createRelicBreakdown();
