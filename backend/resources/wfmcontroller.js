@@ -1,5 +1,5 @@
 import * as task from './wfmtasks.js';
-import { matchLookup } from './matchLookup.js';
+import { matchLookup } from '../helper/matchLookup.js';
 import * as riven from './riventasks.js';
 import { response } from 'express';
 //express friendly functions

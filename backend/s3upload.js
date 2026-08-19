@@ -3,7 +3,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import * as task from './resources/wfmtasks.js';
 import { readTextFile } from './resources/readTextFile.js';
 import { destructureOrders } from './resources/destructureOrders.js';
-import { sleep } from './resources/sleep.js';
+import { sleep } from './helper/sleep.js';
 const s3Client = new S3Client({ region: "ap-southeast-2" });
 const baseURL = "https://api.warframe.market/v2"
 

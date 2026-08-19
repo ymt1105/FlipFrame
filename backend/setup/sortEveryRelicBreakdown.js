@@ -1,5 +1,5 @@
 import path from 'path';
-import relicLookup from '../jsons/relicPriceLookup.json' with { type: 'json' };
+import relicLookup from '../jsons/allRelicPriceLookup.json' with { type: 'json' };
 import { writeOutJSONFile } from '../helper/writeOutJSONFile.js';
 import { fileURLToPath } from 'url';
 

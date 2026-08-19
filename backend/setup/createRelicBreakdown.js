@@ -2,41 +2,46 @@ import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { writeOutJSONFile } from './writeOutJSONFile.js';
+import { writeOutJSONFile } from '../helper/writeOutJSONFile.js';
+import readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
+
 //TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, '../../.env') });
-console.time("Setup Duration");
-export const baseURL = "https://stats.alecaframe.com";
+console.time('Setup Duration');
+export const baseURL = 'https://stats.alecaframe.com';
 
 export const alecaframeToken = process.env.ALECAFRAME_TOKEN;
 export const apiHeaders = {
-    "accept": "application/json"
+    'accept': 'application/json'
 };
 
 const allPriceData = await getItemPriceDataSheet();
+
 export const itemPriceObject = await createItemPriceObject(allPriceData);
+await writeOutJSONFile(itemPriceObject, __dirname, 'ItemPriceLookup.json');
 
 export const refinementChances = {
-    "Intact" : {
-        "Common" : 0.2533,
-        "Uncommon" : 0.11,
-        "Rare" : 0.02
+    'Intact' : {
+        'Common' : 0.2533,
+        'Uncommon' : 0.11,
+        'Rare' : 0.02
     },
-    "Exceptional" : {
-        "Common" : 0.2333,
-        "Uncommon" : 0.13,
-        "Rare" : 0.04
+    'Exceptional' : {
+        'Common' : 0.2333,
+        'Uncommon' : 0.13,
+        'Rare' : 0.04
     },
-    "Flawless" : {
-        "Common" : 0.2,
-        "Uncommon" : 0.17,
-        "Rare" : 0.06
+    'Flawless' : {
+        'Common' : 0.2,
+        'Uncommon' : 0.17,
+        'Rare' : 0.06
     },
-    "Radiant" : {
-        "Common" : 0.1667,
-        "Uncommon" : 0.20,
-        "Rare" : 0.1
+    'Radiant' : {
+        'Common' : 0.1667,
+        'Uncommon' : 0.20,
+        'Rare' : 0.1
     }
 };
 
@@ -44,7 +49,7 @@ export const refinementChances = {
     Get user's relic string from AlecaFrame API
 */
 async function getRelicString() {
-    const modifiedURL = baseURL + "/api/stats/public/getRelicInventory?publicToken=" + encodeURIComponent(alecaframeToken);
+    const modifiedURL = baseURL + '/api/stats/public/getRelicInventory?publicToken=' + encodeURIComponent(alecaframeToken);
     
     const response = await fetch(modifiedURL, { headers: apiHeaders });
     
@@ -159,7 +164,7 @@ async function getItemPriceDataSheet(){
             console.warn(`Failed to fetch for offset ${i}, trying previous day...`);
         }
     }
-    throw new Error("Could not find any price history files from the last 3 days.");
+    throw new Error('Could not find any price history files from the last 3 days.');
 }
 
 /*
@@ -168,7 +173,7 @@ async function getItemPriceDataSheet(){
 async function createItemPriceObject(priceData){
     const itemPriceObject = {};
     Object.entries(priceData).forEach(([key, value]) => {
-        if (key.includes("Prime")){
+        if (key.includes('Prime')){
             const soldWeightedAverage = value[0].wa_price;
             itemPriceObject[key] = soldWeightedAverage;
         }
@@ -207,21 +212,21 @@ async function calculateRelicValue(drops, refinementName){
 */
 async function getRelicDropsFromRewards(relicRewards){
     const dropsPrices = {
-        "Common" : {},
-        "Uncommon" : {},
-        "Rare" : {}
+        'Common' : {},
+        'Uncommon' : {},
+        'Rare' : {}
     };
     for (const stage of Object.values(relicRewards)){
         const itemName = stage.item.name;
-        if (!itemName.includes("Forma")){
+        if (!itemName.includes('Forma')){
             const itemPrice = await lookupPrice(itemName);
             const rawChance = stage.chance;
 
-            let tier = "Common";
+            let tier = 'Common';
             if (rawChance <= 5.0) {
-                tier = "Rare";
+                tier = 'Rare';
             } else if (rawChance <= 15.0) {
-                tier = "Uncommon";
+                tier = 'Uncommon';
             }
 
             dropsPrices[tier][itemName] = itemPrice;
@@ -251,12 +256,12 @@ async function createRelicBreakdown(){
         data: {},
     };
     
-    relicsBreakdown["date_printed"] = await getFormattedDate(0);
+    relicsBreakdown['date_printed'] = await getFormattedDate(0);
     const refinementNames = Object.keys(refinementChances);
-    const validRelics = translatedArray.filter(relic => relic.tier !== "Requiem");
+    const validRelics = translatedArray.filter(relic => relic.tier !== 'Requiem');
 
     //process x in parallel to speed up execution
-    const batchSize = 50;
+    const batchSize = 30;
     for (let i = 0; i < validRelics.length; i += batchSize) {
         const batch = validRelics.slice(i, i + batchSize);
 
@@ -268,7 +273,7 @@ async function createRelicBreakdown(){
                     return;
                 }
 
-                relicsBreakdown["data"][relicName] = {
+                relicsBreakdown['data'][relicName] = {
                     Intact: {},
                     Exceptional: {},
                     Flawless: {},
@@ -276,7 +281,7 @@ async function createRelicBreakdown(){
                 };
 
                 const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
-                relicsBreakdown["data"][relicName] = {
+                relicsBreakdown['data'][relicName] = {
                     drops: drops
                 }
                 for (const refinementName of refinementNames) {
@@ -288,7 +293,7 @@ async function createRelicBreakdown(){
                         count: 0
                     };    
 
-                    relicsBreakdown["data"][relicName][refinementName] = {
+                    relicsBreakdown['data'][relicName][refinementName] = {
                         price: relicPrices,
                         quantity: relicDetailed.count
                     };
@@ -300,7 +305,7 @@ async function createRelicBreakdown(){
         }));
     }
 
-    const vanguardRelics = ["Vanguard C1", "Vanguard E1", "Vanguard M1", "Vanguard P1"];
+    const vanguardRelics = ['Vanguard C1', 'Vanguard E1', 'Vanguard M1', 'Vanguard P1'];
     for (const relicName of vanguardRelics) {
         try {
             const responseJson = await getRelicContents(relicName);
@@ -309,14 +314,14 @@ async function createRelicBreakdown(){
                 continue;
             }
             
-            relicsBreakdown["data"][relicName] = relicsBreakdown["data"][relicName] || {
+            relicsBreakdown['data'][relicName] = relicsBreakdown['data'][relicName] || {
                 Intact: {}, Exceptional: {}, Flawless: {}, Radiant: {}
             };
 
             const drops = await getRelicDropsFromRewards(responseJson[0].rewards);            
             for (const refinementName of refinementNames) {
                 const relicValue = await calculateRelicValue(drops, refinementName);
-                relicsBreakdown["data"][relicName][refinementName] = {
+                relicsBreakdown['data'][relicName][refinementName] = {
                     price: relicValue,
                     quantity: 999
                 };    
@@ -325,9 +330,50 @@ async function createRelicBreakdown(){
             console.error(`Error processing ${relicName}:`, error.message);
         }
     }
-    await writeOutJSONFile(relicsBreakdown, __dirname);
-    console.log("Successfully created lookup file");
+    await writeOutJSONFile(relicsBreakdown, __dirname, 'relicPriceLookup.json');
+    console.log('Successfully created lookup file');
 }
 
-await createRelicBreakdown();
-console.timeEnd("Setup Duration");
+// await createRelicBreakdown();
+
+async function askQuestion() {
+  const rl = readline.createInterface({ input, output });
+
+  try {
+    console.log("1. Create relic breakdown file based on Alecaframe User")
+    console.log("2. Sort the relic breakdown file based on Alecaframe User")
+    console.log("3. Create breakdown file for EVERY possible relics")
+    console.log("4. Create breakdown file based on Alecaframe User")
+    console.log("5. All of the above")
+    const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
+    // if (userResponse < 1 || userResponse > 5){
+    // } else{
+    //     console.log(userResponse)
+
+    // }\
+    switch (userResponse) {
+        case 1:
+            await createRelicBreakdown();
+            break;
+        case 2:
+
+        case 3:
+
+        case 4:
+
+        case 5:
+
+        default:
+            console.error("Number does not fall within the parameters")
+    }
+        
+    
+  } catch (err) {
+    console.error(err);
+  } finally {
+    rl.close();
+  }
+}
+await askQuestion();
+
+console.timeEnd('Setup Duration');

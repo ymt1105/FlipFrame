@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { sleep } from './sleep.js';
+import { sleep } from '../helper/sleep.js';
 import { writeFile } from 'node:fs/promises';
 import { stat } from 'node:fs';
 import rivenLookup from '../jsons/rivenlookup.json' with { type: 'json' };
