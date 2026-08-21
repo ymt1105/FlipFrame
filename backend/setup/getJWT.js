@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import { config } from 'dotenv';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-
-
+import fs from 'fs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../../.env') });
+console.log(__dirname);
+config({ path: path.resolve(__dirname, '../.env') });
 
 export async function getJWT(){
     const email = process.env.WF_EMAIL;
@@ -27,7 +27,25 @@ export async function getJWT(){
         .split(";")[0]
         .replace("JWT=", "");
 
-    console.log(`Your WFM JWT is: ${token}`);
+    const envPath = path.resolve(__dirname, '../.env');
+
+    let envContent = '';
+    if (fs.existsSync(envPath)) {
+        envContent = fs.readFileSync(envPath, 'utf8');
+    }
+
+    const envKey = 'JWT';
+    const regex = new RegExp(`^${envKey}=.*`, 'm');
+
+    if (regex.test(envContent)) {
+        envContent = envContent.replace(regex, `${envKey}=${token}`);
+    } else {
+        envContent += `\n${envKey}=${token}`;
+    }
+
+    fs.writeFileSync(envPath, envContent.trim() + '\n', 'utf8');
+
+    console.log('JWT successfully updated in .env');
 }
 
 getJWT();

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { writeOutJSONFile } from '../helper/writeOutJSONFile.js';
 import readline from 'node:readline/promises';
@@ -8,7 +9,7 @@ import { stdin as input, stdout as output } from 'node:process';
 
 //TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../../.env') });
+config({ path: path.resolve(__dirname, '../.env') });
 console.time('Setup Duration');
 export const baseURL = 'https://stats.alecaframe.com';
 
@@ -181,6 +182,16 @@ async function createItemPriceObject(priceData){
     return itemPriceObject;
 }
 
+async function createRelicPriceArray(priceData){
+    const relicsArray = [];
+    Object.entries(priceData).forEach(([key, value]) => {
+        if (key.includes('Relic')){
+            // slice relic off the end of the key
+            relicsArray.push(key.slice(0,-5));
+        }
+    });
+    return relicsArray;
+}
 /*
     Checks Object to see the price
 */
@@ -334,37 +345,142 @@ async function createRelicBreakdown(){
     console.log('Successfully created lookup file');
 }
 
-// await createRelicBreakdown();
+async function createAllRelicBreakdown(){
+    const relicString = await getRelicString();
+    const allRelicsArray = await createRelicPriceArray(allPriceData);
+
+    const relicsBreakdown = {
+        data: {},
+    };
+    
+    relicsBreakdown['date_printed'] = await getFormattedDate(0);
+    const refinementNames = Object.keys(refinementChances);
+    const validRelics = allRelicsArray.filter(relic => {
+        if (!relic.includes("Requiem")){
+            return relic
+        }
+    });
+
+    //process x in parallel to speed up execution
+    const batchSize = 100;
+    for (let i = 0; i < validRelics.length; i += batchSize) {
+        const batch = validRelics.slice(i, i + batchSize);
+
+        await Promise.all(batch.map(async (relic) => {
+            const relicName = relic;
+            try {
+                const responseJson = await getRelicContents(relicName);
+                if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
+                    return;
+                }
+
+                relicsBreakdown['data'][relicName] = {
+                    Intact: {},
+                    Exceptional: {},
+                    Flawless: {},
+                    Radiant: {}
+                };
+
+                const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
+                relicsBreakdown['data'][relicName] = {
+                    drops: drops
+                }
+                for (const refinementName of refinementNames) {
+                    const lookupKey = `${relicName} ${refinementName}`;
+                    const relicPrices = await calculateRelicValue(drops, refinementName);
+                    
+                    const relicDetailed = {
+                        tier: relic.split(" "),
+                        count: 0
+                    };    
+
+                    relicsBreakdown['data'][relicName][refinementName] = {
+                        price: relicPrices,
+                        quantity: relicDetailed.count
+                    };
+
+                }
+            } catch (err) {
+                console.warn(`Skipping ${relicName} due to error: ${err.message}`);
+            }
+        }));
+    }
+    await writeOutJSONFile(relicsBreakdown, __dirname, 'allRelicPriceLookup.json');
+    console.log('Successfully created lookup file');
+}
+
+function sortByMVRadiantRelic(relicBreakdown){
+    const sortedRelicLookup = Object.entries(relicBreakdown).sort((a, b) => {
+        const radiantA = a[1].Radiant.price;
+        const radiantB = b[1].Radiant.price;
+        return radiantB - radiantA;
+    });
+    return sortedRelicLookup;
+}
+
+/*
+    Determines which relics have the highest difference between their intact form compared to their radiant form
+*/
+function calculateUpgradeDifference(relicBreakdown){
+    for (const obj of Object.entries(relicBreakdown)){
+        const relicName = obj[0];
+        const relicArray = obj[1];
+        const difference = relicArray.Radiant.price - relicArray.Intact.price;
+        relicBreakdown[relicName].upgrade_diff = difference;
+    }
+    const sortedRelicLookup = Object.entries(relicBreakdown).sort((a, b) => {
+        const diffA = a[1].upgrade_diff;
+        const diffB = b[1].upgrade_diff;
+        return diffB - diffA;
+    });
+    return sortedRelicLookup
+}
+
+async function sortRelicData(fileName){
+    const rawData = JSON.parse(await fs.readFileSync(`../jsons/${fileName}.json`, 'utf8'));
+    const relicData = await rawData.data;
+    const mostValuableRelic = await sortByMVRadiantRelic(relicData);
+    const MVRObject = Object.fromEntries(mostValuableRelic);
+    writeOutJSONFile(MVRObject, __dirname, 'sortedByValueRelic.json');
+    
+    const value = await calculateUpgradeDifference(relicData);
+    const valueObject = Object.fromEntries(value);
+    writeOutJSONFile(valueObject, __dirname, 'bestToUpgradeRelics.json');
+}
+
 
 async function askQuestion() {
   const rl = readline.createInterface({ input, output });
 
   try {
     console.log("1. Create relic breakdown file based on Alecaframe User")
-    console.log("2. Sort the relic breakdown file based on Alecaframe User")
-    console.log("3. Create breakdown file for EVERY possible relics")
-    console.log("4. Create breakdown file based on Alecaframe User")
-    console.log("5. All of the above")
-    const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
-    // if (userResponse < 1 || userResponse > 5){
-    // } else{
-    //     console.log(userResponse)
+    console.log("2. Create breakdown file for EVERY possible relics")
+    console.log("3. All of the above")
+    console.log("4. Sort the relic breakdown file based on file name")
 
-    // }\
+    const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
     switch (userResponse) {
         case 1:
             await createRelicBreakdown();
             break;
         case 2:
-
+            console.log("Selected 2, getting data for all relics... this may take a very long time")
+            await createAllRelicBreakdown();
+            break;
         case 3:
+            console.log("Selected 3, this will take awhile...")
 
+            await createRelicBreakdown();
+            await createAllRelicBreakdown();
+            break;
         case 4:
-
-        case 5:
-
-        default:
-            console.error("Number does not fall within the parameters")
+            const fileResponse = await rl.question('What is the json file name?, if using option 1 do not input anything \n');
+            const fileName = fileResponse || "relicPriceLookup"
+            console.log(fileName);
+            await sortRelicData(fileName);
+            break;
+        default:    
+            console.error("Number does not fall within the parameters");
     }
         
     

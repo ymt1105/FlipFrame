@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL;
+//DELETE ONCE FULLY DEPLOYED
+
+const API_URL = "http://localhost:3000";
 
 async function handleResponse(response, contextMessage) {
     if (!response.ok) {

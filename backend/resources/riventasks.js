@@ -10,7 +10,7 @@ import rivenLookup from '../jsons/rivenlookup.json' with { type: 'json' };
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../../.env') });
+config({ path: path.resolve(__dirname, '../.env') });
 
 export const baseURL = "https://api.warframe.market/v1"
 

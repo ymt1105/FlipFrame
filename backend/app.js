@@ -54,9 +54,7 @@ router.route('/rivens/weapons/:slug')
 app.use('/api', router);
 app.use(router);
 
-const API_URL = process.env.VITE_API_URL
-const PORT = API_URL.slice(-4)
-
+const PORT = 3000
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on http://localhost:${PORT}`);
 })

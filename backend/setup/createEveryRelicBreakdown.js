@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { writeOutJSONFile } from '../helper/writeOutJSONFile.js';
 //TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-config({ path: path.resolve(__dirname, '../../.env') });
+config({ path: path.resolve(__dirname, '../.env') });
 console.time('Setup Duration');
 export const baseURL = 'https://stats.alecaframe.com';
 
