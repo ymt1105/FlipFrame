@@ -28,7 +28,7 @@ async function createLookupFile(){
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
 
-        const filePath = path.join(__dirname, '..', 'jsons', 'itemlookup.json');
+        const filePath = path.join(__dirname, '..', 'jsons', 'itemLookup.json');
         const dirPath = path.dirname(filePath);
         
         await mkdir(dirPath, { recursive: true }); 
@@ -64,7 +64,7 @@ async function createWeaponLookupFile(){
         const jsonString = JSON.stringify(lookupJson, null, 2);
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        const filePath = path.join(__dirname, '..', 'jsons', 'rivenlookup.json');   
+        const filePath = path.join(__dirname, '..', 'jsons', 'rivenLookup.json');   
         const dirPath = path.dirname(filePath);
         
         await mkdir(dirPath, { recursive: true });     
