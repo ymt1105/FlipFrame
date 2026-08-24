@@ -283,17 +283,14 @@ async function createRelicBreakdown(){
                 if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
                     return;
                 }
-
-                relicsBreakdown['data'][relicName] = {
-                    Intact: {},
-                    Exceptional: {},
-                    Flawless: {},
-                    Radiant: {}
-                };
-
+                const vaulted = responseJson[0].vaulted;
+                //returns the type of relic it is
+                const relicType = responseJson[0].name.split(" ")[0];
                 const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
                 relicsBreakdown['data'][relicName] = {
-                    drops: drops
+                    drops: drops,
+                    vaulted: vaulted,
+                    relicType: relicType
                 }
                 for (const refinementName of refinementNames) {
                     const lookupKey = `${relicName} ${refinementName}`;
@@ -324,15 +321,19 @@ async function createRelicBreakdown(){
                 console.log(`Could not find valid rewards for ${relicName}`);
                 continue;
             }
-            relicsBreakdown['data'][relicName] = {drops : {}};
-            relicsBreakdown['data'][relicName] = relicsBreakdown['data'][relicName] || {
-                Intact: {}, Exceptional: {}, Flawless: {}, Radiant: {}
-            };
 
-            const drops = await getRelicDropsFromRewards(responseJson[0].rewards);            
+            const vaulted = responseJson[0].vaulted;
+            //returns the type of relic it is
+            const relicType = responseJson[0].name.split(" ")[0];
+            const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
+            relicsBreakdown['data'][relicName] = {
+                drops: drops,
+                vaulted: vaulted,
+                relicType: relicType
+            }
+       
             for (const refinementName of refinementNames) {
                 const relicValue = await calculateRelicValue(drops, refinementName);
-                relicsBreakdown['data'][relicName]["drops"] = drops;
                 relicsBreakdown['data'][relicName][refinementName] = {
                     price: relicValue,
                     quantity: 999
@@ -347,7 +348,6 @@ async function createRelicBreakdown(){
 }
 
 async function createAllRelicBreakdown(){
-    const relicString = await getRelicString();
     const allRelicsArray = await createRelicPriceArray(allPriceData);
 
     const relicsBreakdown = {
@@ -374,13 +374,6 @@ async function createAllRelicBreakdown(){
                 if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
                     return;
                 }
-
-                relicsBreakdown['data'][relicName] = {
-                    Intact: {},
-                    Exceptional: {},
-                    Flawless: {},
-                    Radiant: {}
-                };
 
                 const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
                 relicsBreakdown['data'][relicName] = {

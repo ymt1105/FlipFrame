@@ -7,6 +7,7 @@ import { WatchlistPage } from './pages/WatchlistPage';
 import { NavBar } from './components/NavBar';
 import { RivenPage } from './pages/RivenPage';
 import { ContractsPage } from './pages/ContractsPage';
+import { RelicsPage } from './pages/RelicsPage';
 
 import { WatchlistContext } from './context/WatchlistContext';
 import './App.css'
@@ -25,6 +26,7 @@ function App() {
           <Route path="/watchlist" element = {<WatchlistPage/>}></Route>
           <Route path="/riven" element = {<RivenPage/>}></Route>
           <Route path="/riven/contracts/:slug" element = {<ContractsPage/>}></Route>
+          <Route path="/relics" element = {<RelicsPage/>}></Route>
         </Routes>
       </div>
     </BrowserRouter>

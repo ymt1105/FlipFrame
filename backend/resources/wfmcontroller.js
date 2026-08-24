@@ -1,6 +1,7 @@
 import * as task from './wfmtasks.js';
 import { matchLookup } from '../helper/matchLookup.js';
 import * as riven from './riventasks.js';
+import * as relic from './relictasks.js'
 import { response } from 'express';
 //express friendly functions
 
@@ -180,6 +181,25 @@ export async function getAllContracts(req, res){
 export async function maximisePrices(req, res){
     try{
         const data = await task.maximiseCurrSellOrders();
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message})
+    }
+}
+
+export async function getAllMyRelics(req, res){
+    try{
+        const data = await relic.getAllMyRelics();
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message})
+    }
+}
+
+export async function searchRelic(req, res){
+    try{
+        const relicName = req.params.relicName;
+        const data = await relic.getRelicInfo(relicName);
         res.json(data);
     } catch(error){
         res.status(500).json({ error: error.message})

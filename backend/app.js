@@ -52,6 +52,11 @@ router.route('/rivens/weapons/:slug')
     .get(control.returnRivenOrders);
 
 //relic endpoints
+router.route('/relics')
+    .get(control.getAllMyRelics);
+
+router.route('/relics/:relicName')
+    .get(control.searchRelic);
 
 app.use('/api', router);
 app.use(router);

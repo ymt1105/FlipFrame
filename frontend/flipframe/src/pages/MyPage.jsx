@@ -4,6 +4,7 @@ import { getAllOrders, lookupItemArray, getAllContracts, bump, maximise } from '
 import { RivenCard } from '../features/rivens/RivenCard';
 import { OrderCard } from '../features/orders/OrderCard';
 import { GeneralButton } from '../components/GeneralButton';
+import { useNavigate } from 'react-router-dom';
 
 export const MyPage = () => {
     const { data: items, isLoading: isOrdersLoading, error: ordersError, isSuccess } = useQuery({
@@ -24,6 +25,7 @@ export const MyPage = () => {
         },
         enabled: isSuccess && !!items?.data && items.data.length > 0 
     });
+    const navigate = useNavigate();
 
     const lookupMap = useMemo(() => {
     const map = new Map();
@@ -51,12 +53,18 @@ export const MyPage = () => {
         }
         return order
     });
+    const handleRelicOnclick = (e) => {
+        navigate(`/relics`);
+    }
 
     return (
         <div>
             <h1 className = "text-6xl font-bold py-5">My Orders</h1>
+            <div>
+                <GeneralButton className="w-fill" onClickMethod={handleRelicOnclick} displayLabel={"Relic Stuff"}/>
+            </div>
             <div className='grid grid-cols-2'>
-                <GeneralButton className="w-fill" onClickMethod={bump} displayLabel={"Bump all my orders"}/>
+                <GeneralButton onClickMethod={bump} displayLabel={"Bump all my orders"}/>
                 <GeneralButton onClickMethod={maximise} displayLabel={"Maximise All Sell Orders"}/>
             </div>
             {isLookupLoading && <p>Loading extra details...</p>}
