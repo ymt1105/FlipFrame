@@ -2,9 +2,9 @@
 title Warframe App Dev Launcher
 
 echo Starting Backend Server...
-start cmd /k "node backend/app.js"
+start cmd /c "node backend/app.js"
 
 echo Starting Frontend (Vite)...
-start cmd /k "cd /d frontend\flipframe && npm run dev"
+start cmd /c "cd /d frontend\flipframe && npm run dev"
 echo Both servers have been launched
 pause

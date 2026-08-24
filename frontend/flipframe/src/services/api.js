@@ -86,3 +86,8 @@ export async function maximise(){
     const response = await fetch(`${API_URL}/orders/maximise`, { method: 'POST' });
     return handleResponse(response, "Failed to bump order");
 }
+
+export async function getAllRelics(){
+    const response = await fetch(`${API_URL}/relics`);
+    return handleResponse(response, "Failed to fetch relics");
+}
