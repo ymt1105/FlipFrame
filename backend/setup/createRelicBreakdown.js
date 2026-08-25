@@ -336,7 +336,7 @@ async function createRelicBreakdown(){
                 const relicValue = await calculateRelicValue(drops, refinementName);
                 relicsBreakdown['data'][relicName][refinementName] = {
                     price: relicValue,
-                    quantity: 999
+                    quantity: 0
                 };    
             }
         } catch (error) {
@@ -363,7 +363,7 @@ async function createAllRelicBreakdown(){
     });
 
     //process x in parallel to speed up execution
-    const batchSize = 100;
+    const batchSize = 30;
     for (let i = 0; i < validRelics.length; i += batchSize) {
         const batch = validRelics.slice(i, i + batchSize);
 
@@ -443,7 +443,7 @@ function calculateUpgradeDifference(relicBreakdown){
 }
 
 async function sortRelicData(fileName){
-    const rawData = JSON.parse(await fs.readFileSync(`../jsons/${fileName}.json`, 'utf8'));
+    const rawData = JSON.parse(await fs.readFileSync(`../FlipFrame/backend/jsons/${fileName}.json`, 'utf8')) || JSON.parse(await fs.readFileSync(`../jsons/${fileName}.json`, 'utf8'));
     const relicData = await rawData;
     const mostValuableRelicObject = await sortByMVRadiantRelic(relicData);
     writeOutJSONFile(mostValuableRelicObject, __dirname, 'sortedByValueRelic.json');
@@ -461,7 +461,7 @@ async function askQuestion() {
     console.log("2. Create breakdown file for EVERY possible relics")
     console.log("3. All of the above")
     console.log("4. Sort the relic breakdown file based on file name")
-    console.log("5. SET UP EVERYTHING")
+    console.log("5. Sort the relic breakdown file based on Alecaframe User")
 
     const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
     switch (userResponse) {
@@ -481,15 +481,12 @@ async function askQuestion() {
         case 4:
             console.log("Selected 4.")
             const fileResponse = await rl.question('What is the json file name?, if using option 1 do not input anything \n');
-            const fileName = fileResponse || "relicPriceLookup"
+            const fileName = fileResponse || "relicPriceLookup";
             console.log(fileName);
             await sortRelicData(fileName);
             break;
         case 5:
-            console.log("Selected 5, this will take awhile...")
-
-            await createRelicBreakdown();
-            await createAllRelicBreakdown();
+            console.log("Selected 5.")
             await sortRelicData("relicPriceLookup");
             break;
 
@@ -504,6 +501,8 @@ async function askQuestion() {
     rl.close();
   }
 }
-await askQuestion();
+(async () => {
+    await askQuestion();
+})().catch(console.error);
 
 console.timeEnd('Setup Duration');
