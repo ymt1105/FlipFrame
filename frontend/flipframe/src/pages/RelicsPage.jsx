@@ -23,7 +23,7 @@ export const RelicsPage = () => {
                     const relicInfo = relic[1];
                     console.log(relicInfo);
                     return (
-                        <div>
+                        <div key={relicName}>
                             <h2 className="text-lg font-bold mb-2">{relicName}</h2>
                             <p>Vaulted: {relicInfo.vaulted ? "Yes" : "No"}</p>
                             <p>{relicInfo.Intact.quantity}x Intact: {relicInfo.Intact.price.toFixed(2)}</p>

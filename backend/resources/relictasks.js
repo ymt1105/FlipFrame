@@ -29,9 +29,15 @@ try {
 }
 
 export async function getAllMyRelics(){
-    const data = myRelicLookup;
+    const data = sortedRelicLookup;
     return data;
 }
+
+export async function getAllMyRelicsSorted(){
+    const data = sortedRelicLookup;
+    return data;
+}
+
 // return best x relics to upgrade, where the difference between radiant and intact is the smallest
 export async function getBestRelicsToUpgrade(){
     const data = bestRelicsToUpgrade.data;
