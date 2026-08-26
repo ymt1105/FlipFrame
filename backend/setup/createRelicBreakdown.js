@@ -450,6 +450,13 @@ async function sortRelicData(fileName){
     
     const valueObject = await calculateUpgradeDifference(relicData);
     writeOutJSONFile(valueObject, __dirname, 'bestToUpgradeRelics.json');
+    
+    const AllData = JSON.parse(await fs.readFileSync(`../FlipFrame/backend/jsons/allRelicPriceLookup.json`, 'utf8'))
+    const mostValuableAllRelicObject = await sortByMVRadiantRelic(AllData);
+    writeOutJSONFile(mostValuableAllRelicObject, __dirname, 'sortedByValueAllRelic.json');
+ 
+    const allValueObject = await calculateUpgradeDifference(AllData);
+    writeOutJSONFile(allValueObject, __dirname, 'bestToUpgradeAllRelics.json');
 }
 
 
