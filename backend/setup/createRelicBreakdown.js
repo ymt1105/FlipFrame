@@ -343,8 +343,7 @@ async function createRelicBreakdown(){
             console.error(`Error processing ${relicName}:`, error.message);
         }
     }
-    await writeOutJSONFile(relicsBreakdown, __dirname, 'relicPriceLookup.json');
-    console.log('Successfully created lookup file');
+    await sortRelicData(relicsBreakdown);
 }
 
 async function createAllRelicBreakdown(){
@@ -380,7 +379,6 @@ async function createAllRelicBreakdown(){
                     drops: drops
                 }
                 for (const refinementName of refinementNames) {
-                    const lookupKey = `${relicName} ${refinementName}`;
                     const relicPrices = await calculateRelicValue(drops, refinementName);
                     
                     const relicDetailed = {
@@ -402,22 +400,6 @@ async function createAllRelicBreakdown(){
     await writeOutJSONFile(relicsBreakdown, __dirname, 'allRelicPriceLookup.json');
     console.log('Successfully created lookup file');
 }
-
-function sortByMVRadiantRelic(relicBreakdown){
-    const extractedData = relicBreakdown.data;
-    const sortedEntries = Object.entries(extractedData).sort((a, b) => {
-        const radiantA = a[1].Radiant?.price ?? 0;
-        const radiantB = b[1].Radiant?.price ?? 0;
-        return radiantB - radiantA;
-    });
-
-    const sortedData = Object.fromEntries(sortedEntries);
-    return {
-        ...relicBreakdown,
-        data: sortedData
-    };
-}
-
 /*
     Determines which relics have the highest difference between their intact form compared to their radiant form
 */
@@ -428,11 +410,11 @@ function calculateUpgradeDifference(relicBreakdown){
         const relicName = obj[0];
         const relicArray = obj[1];
         const difference = relicArray.Radiant.price - relicArray.Intact.price;
-        extractedData[relicName].upgrade_diff = difference;
+        extractedData[relicName].upgradeDiff = difference;
     }
     const sortedEntries = Object.entries(extractedData).sort((a, b) => {
-        const diffA = a[1].upgrade_diff;
-        const diffB = b[1].upgrade_diff;
+        const diffA = a[1].upgradeDiff;
+        const diffB = b[1].upgradeDiff;
         return diffB - diffA;
     });
     const sortedData = Object.fromEntries(sortedEntries);
@@ -442,21 +424,9 @@ function calculateUpgradeDifference(relicBreakdown){
     };
 }
 
-async function sortRelicData(fileName){
-    const rawData = JSON.parse(await fs.readFileSync(`../FlipFrame/backend/jsons/${fileName}.json`, 'utf8')) || JSON.parse(await fs.readFileSync(`../jsons/${fileName}.json`, 'utf8'));
-    const relicData = await rawData;
-    const mostValuableRelicObject = await sortByMVRadiantRelic(relicData);
-    writeOutJSONFile(mostValuableRelicObject, __dirname, 'sortedByValueRelic.json');
-    
-    const valueObject = await calculateUpgradeDifference(relicData);
-    writeOutJSONFile(valueObject, __dirname, 'bestToUpgradeRelics.json');
-    
-    const AllData = JSON.parse(await fs.readFileSync(`../FlipFrame/backend/jsons/allRelicPriceLookup.json`, 'utf8'))
-    const mostValuableAllRelicObject = await sortByMVRadiantRelic(AllData);
-    writeOutJSONFile(mostValuableAllRelicObject, __dirname, 'sortedByValueAllRelic.json');
- 
-    const allValueObject = await calculateUpgradeDifference(AllData);
-    writeOutJSONFile(allValueObject, __dirname, 'bestToUpgradeAllRelics.json');
+async function sortRelicData(relicBreakdown){
+    const valueObject = await calculateUpgradeDifference(relicBreakdown);
+    writeOutJSONFile(valueObject, __dirname, 'relicPriceLookup.json');
 }
 
 
@@ -467,12 +437,11 @@ async function askQuestion() {
     console.log("1. Create relic breakdown file based on Alecaframe User")
     console.log("2. Create breakdown file for EVERY possible relics")
     console.log("3. All of the above")
-    console.log("4. Sort the relic breakdown file based on file name")
-    console.log("5. Sort the relic breakdown file based on Alecaframe User")
 
     const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
     switch (userResponse) {
         case 1:
+            console.log("Selected 1, getting data for your relics...")
             await createRelicBreakdown();
             break;
         case 2:
@@ -481,20 +450,8 @@ async function askQuestion() {
             break;
         case 3:
             console.log("Selected 3, this will take awhile...")
-
             await createRelicBreakdown();
             await createAllRelicBreakdown();
-            break;
-        case 4:
-            console.log("Selected 4.")
-            const fileResponse = await rl.question('What is the json file name?, if using option 1 do not input anything \n');
-            const fileName = fileResponse || "relicPriceLookup";
-            console.log(fileName);
-            await sortRelicData(fileName);
-            break;
-        case 5:
-            console.log("Selected 5.")
-            await sortRelicData("relicPriceLookup");
             break;
 
         default:    

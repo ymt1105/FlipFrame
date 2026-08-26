@@ -16,7 +16,7 @@ export const RivenCard = ({rivenData}) => {
     let counter = 0
     return(
         <div className="bg-white p-4 border rounded shadow-md flex flex-col h-[300px] w-[550px] shrink-0 overflow-hidden">        
-            <h2 className="center text-lg font-bold mb-2">{rivenDetails.weapon_name} {rivenDetails.prefix}</h2>
+            <h2>{rivenDetails.weapon_name} {rivenDetails.prefix}</h2>
             <div className = "grid grid-cols-2">
                 <div>
                     <ul className="display-flex">
