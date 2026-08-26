@@ -120,12 +120,6 @@ async function translateRelicString(relicString){
         offset += 9;
     }
     
-    uniqueRelicsMap.set('Requiem Eterna', {
-        tier: 'Requiem',
-        name: 'Eterna',
-        count: 10,
-        fullname: 'Requiem Eterna'
-    });
     const translatedArray = Array.from(uniqueRelicsMap.values());
     return { translatedArray, detailedRelicObject };
 }
@@ -187,7 +181,14 @@ async function createRelicPriceArray(priceData){
     Object.entries(priceData).forEach(([key, value]) => {
         if (key.includes('Relic')){
             const cleanKey = key.replace(/relic/gi, '').trim(); 
-            relicsArray.push(cleanKey);
+            const splitName = cleanKey.split(" ");
+            const element = {
+                tier : splitName[0],
+                name : splitName[1],
+                count : 0,
+                fullname : cleanKey
+            }
+            relicsArray.push(element);
         }
     });
     return relicsArray;
@@ -257,27 +258,37 @@ async function getRelicDrops(relic){
     return await getRelicDropsFromRewards(relicInfo[0].rewards);
 }
 
-/*
-    Create Object with all the required data
-*/
 async function createRelicBreakdown(){
+    const allRelicsArray = await createRelicPriceArray(allPriceData);
     const relicString = await getRelicString();
-    const { translatedArray, detailedRelicObject } = await translateRelicString(relicString);
+    const {translatedArray, detailedRelicObject} = await translateRelicString(relicString);
     const relicsBreakdown = {
         data: {},
     };
-    
+    const mergedArray = [...allRelicsArray, ...translatedArray].reduce((acc, current) => {
+        const existing = acc.find(item => item.fullname === current.fullname);
+        
+        if (existing) {
+            Object.assign(existing, current);
+        } else {
+            acc.push({ ...current });
+        }
+        
+        return acc;
+    }, []);
+
+    const validRelics = mergedArray.filter(relic => relic.tier != "Requiem");
     relicsBreakdown['date_printed'] = await getFormattedDate(0);
     const refinementNames = Object.keys(refinementChances);
-    const validRelics = translatedArray.filter(relic => relic.tier !== 'Requiem');
-
-    //process x in parallel to speed up execution
-    const batchSize = 30;
+    // //process x in parallel to speed up execution
+    const batchSize = 100;
     for (let i = 0; i < validRelics.length; i += batchSize) {
         const batch = validRelics.slice(i, i + batchSize);
 
         await Promise.all(batch.map(async (relic) => {
             const relicName = relic.fullname;
+            let isOwned = false;
+
             try {
                 const responseJson = await getRelicContents(relicName);
                 if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
@@ -290,7 +301,8 @@ async function createRelicBreakdown(){
                 relicsBreakdown['data'][relicName] = {
                     drops: drops,
                     vaulted: vaulted,
-                    relicType: relicType
+                    relicType: relicType,
+                    isOwned: isOwned
                 }
                 for (const refinementName of refinementNames) {
                     const lookupKey = `${relicName} ${refinementName}`;
@@ -305,6 +317,9 @@ async function createRelicBreakdown(){
                         price: relicPrices,
                         quantity: relicDetailed.count
                     };
+                    if (relicDetailed.count > 0){
+                        relicsBreakdown['data'][relicName]['isOwned'] = true;
+                    }
 
                 }
             } catch (err) {
@@ -312,93 +327,8 @@ async function createRelicBreakdown(){
             }
         }));
     }
-
-    const vanguardRelics = ['Vanguard C1', 'Vanguard E1', 'Vanguard M1', 'Vanguard P1'];
-    for (const relicName of vanguardRelics) {
-        try {
-            const responseJson = await getRelicContents(relicName);
-            if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
-                console.log(`Could not find valid rewards for ${relicName}`);
-                continue;
-            }
-
-            const vaulted = responseJson[0].vaulted;
-            //returns the type of relic it is
-            const relicType = responseJson[0].name.split(" ")[0];
-            const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
-            relicsBreakdown['data'][relicName] = {
-                drops: drops,
-                vaulted: vaulted,
-                relicType: relicType
-            }
-       
-            for (const refinementName of refinementNames) {
-                const relicValue = await calculateRelicValue(drops, refinementName);
-                relicsBreakdown['data'][relicName][refinementName] = {
-                    price: relicValue,
-                    quantity: 0
-                };    
-            }
-        } catch (error) {
-            console.error(`Error processing ${relicName}:`, error.message);
-        }
-    }
-    await sortRelicData(relicsBreakdown);
-}
-
-async function createAllRelicBreakdown(){
-    const allRelicsArray = await createRelicPriceArray(allPriceData);
-
-    const relicsBreakdown = {
-        data: {},
-    };
-    
-    relicsBreakdown['date_printed'] = await getFormattedDate(0);
-    const refinementNames = Object.keys(refinementChances);
-    const validRelics = allRelicsArray.filter(relic => {
-        if (!relic.includes("Requiem")){
-            return relic
-        }
-    });
-
-    //process x in parallel to speed up execution
-    const batchSize = 30;
-    for (let i = 0; i < validRelics.length; i += batchSize) {
-        const batch = validRelics.slice(i, i + batchSize);
-
-        await Promise.all(batch.map(async (relic) => {
-            const relicName = relic;
-            try {
-                const responseJson = await getRelicContents(relicName);
-                if (!responseJson || responseJson.length === 0 || !responseJson[0].rewards) {
-                    return;
-                }
-
-                const drops = await getRelicDropsFromRewards(responseJson[0].rewards);
-                relicsBreakdown['data'][relicName] = {
-                    drops: drops
-                }
-                for (const refinementName of refinementNames) {
-                    const relicPrices = await calculateRelicValue(drops, refinementName);
-                    
-                    const relicDetailed = {
-                        tier: relic.split(" "),
-                        count: 0
-                    };    
-
-                    relicsBreakdown['data'][relicName][refinementName] = {
-                        price: relicPrices,
-                        quantity: relicDetailed.count
-                    };
-
-                }
-            } catch (err) {
-                console.warn(`Skipping ${relicName} due to error: ${err.message}`);
-            }
-        }));
-    }
-    await writeOutJSONFile(relicsBreakdown, __dirname, 'allRelicPriceLookup.json');
-    console.log('Successfully created lookup file');
+    console.log(relicsBreakdown);
+    await sortRelicData(relicsBreakdown); 
 }
 /*
     Determines which relics have the highest difference between their intact form compared to their radiant form
@@ -431,42 +361,10 @@ async function sortRelicData(relicBreakdown){
 
 
 async function askQuestion() {
-  const rl = readline.createInterface({ input, output });
 
-  try {
-    console.log("1. Create relic breakdown file based on Alecaframe User")
-    console.log("2. Create breakdown file for EVERY possible relics")
-    console.log("3. All of the above")
-
-    const userResponse = await Math.floor(await rl.question('Which function do you want to use? \n'));
-    switch (userResponse) {
-        case 1:
-            console.log("Selected 1, getting data for your relics...")
-            await createRelicBreakdown();
-            break;
-        case 2:
-            console.log("Selected 2, getting data for all relics... this may take a very long time")
-            await createAllRelicBreakdown();
-            break;
-        case 3:
-            console.log("Selected 3, this will take awhile...")
-            await createRelicBreakdown();
-            await createAllRelicBreakdown();
-            break;
-
-        default:    
-            console.error("Number does not fall within the parameters");
-    }
-        
-    
-  } catch (err) {
-    console.error(err);
-  } finally {
-    rl.close();
-  }
+    console.log("getting data for your relics...")
+    await createRelicBreakdown();
 }
-(async () => {
-    await askQuestion();
-})().catch(console.error);
+await askQuestion();
 
 console.timeEnd('Setup Duration');

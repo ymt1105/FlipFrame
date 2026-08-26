@@ -64,7 +64,7 @@ export const RelicSearchBar = () => {
             const targetItem = allItems.find(([name]) => name === itemName);
             
             if (targetItem) {
-
+                
             } else {
                 console.log("No items matched that search phrase.");
             }

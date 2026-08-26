@@ -1,25 +1,10 @@
 let myRelicLookup = {};
-let sortedRelicLookup = {};
-let bestRelicsToUpgrade = {};
 let allRelicsLookup = {};
 
 try {
-    // Dynamic imports return a Promise and support error handling
     myRelicLookup = (await import('../jsons/relicPriceLookup.json', { with: { type: 'json' } })).default;
 } catch {
     console.warn("relicPriceLookup.json not found. Using default empty object.");
-}
-
-try {
-    sortedRelicLookup = (await import('../jsons/sortedByValueRelic.json', { with: { type: 'json' } })).default;
-} catch {
-    console.warn("sortedByValueRelic.json not found.");
-}
-
-try {
-    bestRelicsToUpgrade = (await import('../jsons/bestToUpgradeRelics.json', { with: { type: 'json' } })).default;
-} catch {
-    console.warn("bestToUpgradeRelics.json not found.");
 }
 
 try {

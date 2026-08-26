@@ -6,7 +6,7 @@ export const RivenAutoCompleteSearch = () => {
     const [lookupData, setLookupData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
-    const [showDropdown, setShowDropdown] = Lookup.json(false);
+    const [showDropdown, setShowDropdown] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [formData, setFormData] = useState({
         input: ""
