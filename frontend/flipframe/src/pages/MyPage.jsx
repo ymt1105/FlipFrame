@@ -70,7 +70,7 @@ export const MyPage = () => {
             {isLookupLoading && <p>Loading extra details...</p>}
             <div className='grid grid-cols-2'>
                 <div>
-                    <h2 className='text-xl font-bold bg-rose-300'>Sell</h2>
+                    <h2 className="bg-green-300 px-2">Sell</h2>
                     <ul className='m-5 flex flex-col gap-5'>
                         {sellOrders.map((item) => {
                             const lookupResult = lookupMap.get(String(item.itemId));
@@ -89,7 +89,7 @@ export const MyPage = () => {
                     </ul>
                 </div>
                 <div>
-                    <h2 className='text-xl font-bold bg-green-300'>Buy</h2>
+                    <h2 className="bg-rose-300 px-2">Buy</h2>
 
                     <ul className='m-5 flex flex-col gap-5'>
                         {buyOrders.map((item) => {

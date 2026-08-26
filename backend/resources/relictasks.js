@@ -29,12 +29,7 @@ try {
 }
 
 export async function getAllMyRelics(){
-    const data = sortedRelicLookup;
-    return data;
-}
-
-export async function getAllMyRelicsSorted(){
-    const data = sortedRelicLookup;
+    const data = myRelicLookup;
     return data;
 }
 
