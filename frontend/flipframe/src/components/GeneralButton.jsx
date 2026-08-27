@@ -24,7 +24,7 @@ export function GeneralButton({ onClickMethod, displayLabel, className = "", ...
       onClick={handleClick}
       disabled={isLoading || props.disabled}
       className={`
-        relative px-4 py-2 transition-all bg-green-500
+        relative px-4 py-2 transition-all bg-green-500 hover:cursor-pointer
         ${isLoading ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}
         ${className}
       `}
