@@ -5,6 +5,7 @@ export const RelicCard = ({relic}) => {
     const relicName = relic[0];
     const relicInfo = relic[1];
     const relicType = relicInfo.relicType;
+    const relicOwned = relicInfo.isOwned;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleRelicClick = (relicName) => {
         setIsModalOpen(true);
@@ -21,10 +22,17 @@ export const RelicCard = ({relic}) => {
             relicType === "Axi" ? "bg-yellow-200" : 
             relicType === "Neo" ? "bg-slate-300" :
             relicType === "Meso" ? "bg-zinc-600" :
-            "bg-amber-800"}`}
+            "bg-amber-900"}`}
             key={relicName}>
             <div onClick = {() => handleRelicClick(relicName)}>
-                <h2 className="">{relicName}</h2>
+                <h2 className={`
+                    ${
+                        relicOwned === true ? "text-blue-400" :
+                        "text-red-300"
+                    }
+                `}>
+                    {relicName}
+                </h2>
                 <p>Vaulted: {relicInfo.vaulted ? "Yes" : "No"}</p>
                 <p>{relicInfo.Intact.quantity}x Intact: {relicInfo.Intact.price.toFixed(2)}</p>
                 <p>{relicInfo.Exceptional.quantity}x Exceptional: {relicInfo.Exceptional.price.toFixed(2)}</p>

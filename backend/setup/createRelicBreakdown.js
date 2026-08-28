@@ -230,34 +230,20 @@ async function getRelicDropsFromRewards(relicRewards){
     };
     for (const stage of Object.values(relicRewards)){
         const itemName = stage.item.name;
-        if (!itemName.includes('Forma')){
-            const itemPrice = await lookupPrice(itemName);
-            const rawChance = stage.chance;
+        const itemPrice = await lookupPrice(itemName) || 0;
+        const rawChance = stage.chance;
 
-            let tier = 'Common';
-            if (rawChance <= 5.0) {
-                tier = 'Rare';
-            } else if (rawChance <= 15.0) {
-                tier = 'Uncommon';
-            }
-
-            dropsPrices[tier][itemName] = itemPrice;
+        let tier = 'Common';
+        if (rawChance <= 5.0) {
+            tier = 'Rare';
+        } else if (rawChance <= 15.0) {
+            tier = 'Uncommon';
         }
+
+        dropsPrices[tier][itemName] = itemPrice;
     }
     return dropsPrices;
 }
-/*
-
-*/
-async function getRelicDrops(relic){
-    const relicName = relic.fullname;
-    const relicInfo = await getRelicContents(relicName);
-    if (!relicInfo || relicInfo.length === 0 || !relicInfo[0].rewards) {
-        throw new Error(`Could not fetch rewards for relic: ${relicName}`);
-    }
-    return await getRelicDropsFromRewards(relicInfo[0].rewards);
-}
-
 async function createRelicBreakdown(){
     const allRelicsArray = await createRelicPriceArray(allPriceData);
     const relicString = await getRelicString();
