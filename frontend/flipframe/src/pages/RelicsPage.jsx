@@ -5,30 +5,70 @@ import { GeneralButton } from "../components/GeneralButton";
 import { useState } from "react";
 import { RelicSearchBar } from "../features/relics/RelicSearchBar";
 export const RelicsPage = () => {
-    const isOpen = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedTier, setSelectedTier] = useState("");
     const [selectedRefinement, setSelectedRefinement] = useState("");
     //add a third state of both
-    const [vaulted, setVaulted] = useState(true);
-    const [owned, setOwned] = useState(true);
+    const [vaultedIndex, setVaultedIndex] = useState(0);
+    const [ownedIndex, setOwnedIndex] = useState(0);
     const [sortingOrder, setSortingOrder] = useState("dscRad")
     const {data: relics, isLoading} = useQuery({
         queryKey: ["relics"],
         queryFn: getAllRelics
     })
+    const vaultedStates = [
+        { label: 'All', color: 'bg-indigo-300' },
+        { label: 'Vaulted', color: 'bg-green-300' },
+        { label: 'Unvaulted', color: 'bg-red-300' }
+    ];
+    const ownedStates = [
+        { label: 'All', color: 'bg-indigo-300' },
+        { label: 'Owned', color: 'bg-green-300' },
+        { label: 'Unowned', color: 'bg-red-300' }
+    ];
     if (isLoading) return <div>Loading...</div>;
 
-    const setIsOpen = () =>{
-        console.log("popup");
+    const toggleDropdown = () =>{
+        setIsOpen(!isOpen);
     }
-    
+    const handleVaultedToggle = () => {
+
+        setVaultedIndex((prevIndex) => (prevIndex + 1) % vaultedStates.length);
+    }
+    const handleOwnedToggle = () => {
+        setOwnedIndex((prevIndex) => (prevIndex + 1) % ownedStates.length);
+        console.log(ownedIndex);
+        console.log(ownedStates[ownedIndex]);
+    }
+    const currentVaultedState = vaultedStates[vaultedIndex];
+    const currentOwnedState = ownedStates[ownedIndex];
     const relicData = Object.entries(relics.data);
     const filteredRelics = relicData?.filter(([relicName, relicInfo]) => {
         const matchesTier = selectedTier === "" || relicInfo.relicType === selectedTier;
-        const matchesVaulted = relicInfo.vaulted === vaulted;
-        const matchesOwned = relicInfo.isOwned === owned;
-        return matchesTier && matchesVaulted && matchesOwned;
+        let matchesVaulted = false;
+        let matchesOwned = false;
+        if (ownedIndex === 1){
+            matchesOwned = relicInfo.isOwned === true;
+        } else if (ownedIndex === 2){
+            matchesOwned = relicInfo.isOwned === false;
+        } else {
+            matchesOwned = true;
+        }
+
+        if (vaultedIndex === 1){
+            matchesVaulted = relicInfo.vaulted === true;
+
+            return matchesTier && matchesVaulted && matchesOwned;
+        } else if (vaultedIndex === 2){
+            matchesVaulted = relicInfo.vaulted === false;
+
+            return matchesTier && matchesVaulted && matchesOwned;
+        } else {
+            return matchesTier && matchesOwned;
+        }
+        
     });
+
     const sortedAndFilteredRelics = [...filteredRelics].sort((a, b) => {
         const relicA = a[1];
         const relicB = b[1];
@@ -79,9 +119,20 @@ export const RelicsPage = () => {
                     <option value="ascDiff">Ascending Difference</option>  
                     <option value="uns">Unsorted</option>
                 </select>
-                <GeneralButton onClickMethod={(e) => {setVaulted(!vaulted); console.log(vaulted)}} className = {vaulted === true ? "bg_green-300" : "bg-red-500"} displayLabel={"Vaulted?"}></GeneralButton>
-                <GeneralButton onClickMethod={(e) => {setOwned(!owned); console.log(owned)}} className = {owned === true ? "bg-green-300" : "bg-red-500"} displayLabel={"Owned?"}></GeneralButton>
-                <GeneralButton onClickMethod={() => setIsOpen(!isOpen)} displayLabel={"Platinum Filter"}></GeneralButton>
+                <GeneralButton onClickMethod={handleVaultedToggle} className = {currentVaultedState.color} displayLabel={currentVaultedState.label}></GeneralButton>
+                <GeneralButton onClickMethod={handleOwnedToggle} className = {currentOwnedState.color} displayLabel={currentOwnedState.label}></GeneralButton>
+                <div className="flex items-center">
+                    <GeneralButton onClickMethod={toggleDropdown} displayLabel={"Platinum Filter"}></GeneralButton>
+                    {isOpen && (
+                        <div className="dropdown-menu">
+                            <p>Greater than</p>
+                            <input type="range"/>
+
+                        </div>
+                    )
+
+                    }
+                </div>
             </div>
             <div className="grid grid-cols-5">
                 {Object.entries(sortedAndFilteredRelics).map(relic => {
