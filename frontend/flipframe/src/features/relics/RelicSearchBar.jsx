@@ -1,7 +1,7 @@
 import { getLookup } from "../../services/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-export const RelicSearchBar = () => {
+export const RelicSearchBar = ({onChange}) => {
     const [lookupData, setLookupData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
@@ -64,7 +64,7 @@ export const RelicSearchBar = () => {
             const targetItem = allItems.find(([name]) => name === itemName);
             
             if (targetItem) {
-                
+                onChange(targetItem[0])
             } else {
                 console.log("No items matched that search phrase.");
             }

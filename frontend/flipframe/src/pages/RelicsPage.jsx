@@ -6,9 +6,9 @@ import { useState } from "react";
 import { RelicSearchBar } from "../features/relics/RelicSearchBar";
 export const RelicsPage = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setQuery] = useState("");
     const [selectedTier, setSelectedTier] = useState("");
     const [selectedRefinement, setSelectedRefinement] = useState("");
-    //add a third state of both
     const [vaultedIndex, setVaultedIndex] = useState(0);
     const [ownedIndex, setOwnedIndex] = useState(0);
     const [sortingOrder, setSortingOrder] = useState("dscRad")
@@ -37,14 +37,23 @@ export const RelicsPage = () => {
     }
     const handleOwnedToggle = () => {
         setOwnedIndex((prevIndex) => (prevIndex + 1) % ownedStates.length);
-        console.log(ownedIndex);
-        console.log(ownedStates[ownedIndex]);
     }
     const currentVaultedState = vaultedStates[vaultedIndex];
     const currentOwnedState = ownedStates[ownedIndex];
     const relicData = Object.entries(relics.data);
     const filteredRelics = relicData?.filter(([relicName, relicInfo]) => {
+        const relicDrops = relicInfo.drops;
         const matchesTier = selectedTier === "" || relicInfo.relicType === selectedTier;
+        let matchesQuery = true
+        if (searchQuery != ""){
+            const cleanedSearchQuery = searchQuery.replace(/relic/gi, '').trim()
+            
+            if (searchQuery in relicDrops.Common || searchQuery in relicDrops.Uncommon || searchQuery in relicDrops.Rare){
+                matchesQuery = true;
+            } else {
+                matchesQuery = cleanedSearchQuery === relicName;
+            }
+        }
         let matchesVaulted = false;
         let matchesOwned = false;
         if (ownedIndex === 1){
@@ -58,13 +67,13 @@ export const RelicsPage = () => {
         if (vaultedIndex === 1){
             matchesVaulted = relicInfo.vaulted === true;
 
-            return matchesTier && matchesVaulted && matchesOwned;
+            return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
         } else if (vaultedIndex === 2){
             matchesVaulted = relicInfo.vaulted === false;
 
-            return matchesTier && matchesVaulted && matchesOwned;
+            return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
         } else {
-            return matchesTier && matchesOwned;
+            return matchesTier && matchesQuery && matchesOwned;
         }
         
     });
@@ -92,9 +101,13 @@ export const RelicsPage = () => {
         return 0;
     });
     
+    // const handleSearchQuery = (e) => {
+    //     setQuery(e.target.value);
+    //     console.log(searchQuery);        
+    // }
     return (
         <div>
-            <RelicSearchBar/>
+            <RelicSearchBar onChange = {setQuery}/>
             <div className="grid grid-cols-6">
                 <select id="tier-select" value={selectedTier} onChange={(e) => setSelectedTier(e.target.value)}>
                     <option value="">Unsorted</option>
