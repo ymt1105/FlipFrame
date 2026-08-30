@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getAllRelics } from "../services/api"
 import { RelicCard } from "../features/relics/RelicCard";
 import { GeneralButton } from "../components/GeneralButton";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { RelicSearchBar } from "../features/relics/RelicSearchBar";
 export const RelicsPage = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +26,52 @@ export const RelicsPage = () => {
         { label: 'Owned', color: 'bg-green-300' },
         { label: 'Unowned', color: 'bg-red-300' }
     ];
+    const currentVaultedState = vaultedStates[vaultedIndex];
+    const currentOwnedState = ownedStates[ownedIndex];
+    const relicData = useMemo(() => {
+        return Object.entries(relics?.data || {});
+    }, [relics?.data]);
+    const filteredRelics = useMemo(() => { 
+        if (!relicData) return [];
+
+        return relicData?.filter(([relicName, relicInfo]) => {
+            const relicDrops = relicInfo.drops;
+            const matchesTier = selectedTier === "" || relicInfo.relicType === selectedTier;
+            let matchesQuery = true
+            if (searchQuery != ""){
+                const cleanedSearchQuery = searchQuery.replace(/relic/gi, '').trim().toLowerCase();
+                if (hasSubstringDeep(relicDrops, searchQuery)){
+                    matchesQuery = true;
+                } else {
+
+                    matchesQuery = relicName.toLowerCase().includes(cleanedSearchQuery);
+                }
+            }
+            let matchesVaulted = false;
+            let matchesOwned = false;
+            if (ownedIndex === 1){
+                matchesOwned = relicInfo.isOwned === true;
+            } else if (ownedIndex === 2){
+                matchesOwned = relicInfo.isOwned === false;
+            } else {
+                matchesOwned = true;
+            }
+
+            if (vaultedIndex === 1){
+                matchesVaulted = relicInfo.vaulted === true;
+
+                return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
+            } else if (vaultedIndex === 2){
+                matchesVaulted = relicInfo.vaulted === false;
+
+                return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
+            } else {
+                return matchesTier && matchesQuery && matchesOwned;
+            }
+        });
+    }, [relicData, searchQuery, selectedTier, selectedRefinement, vaultedIndex, ownedIndex]);
+
+
     if (isLoading) return <div>Loading...</div>;
 
     const toggleDropdown = () =>{
@@ -38,46 +84,9 @@ export const RelicsPage = () => {
     const handleOwnedToggle = () => {
         setOwnedIndex((prevIndex) => (prevIndex + 1) % ownedStates.length);
     }
-    const currentVaultedState = vaultedStates[vaultedIndex];
-    const currentOwnedState = ownedStates[ownedIndex];
-    const relicData = Object.entries(relics.data);
-    const filteredRelics = relicData?.filter(([relicName, relicInfo]) => {
-        const relicDrops = relicInfo.drops;
-        const matchesTier = selectedTier === "" || relicInfo.relicType === selectedTier;
-        let matchesQuery = true
-        if (searchQuery != ""){
-            const cleanedSearchQuery = searchQuery.replace(/relic/gi, '').trim()
-            
-            if (searchQuery in relicDrops.Common || searchQuery in relicDrops.Uncommon || searchQuery in relicDrops.Rare){
-                matchesQuery = true;
-            } else {
-                matchesQuery = cleanedSearchQuery === relicName;
-            }
-        }
-        let matchesVaulted = false;
-        let matchesOwned = false;
-        if (ownedIndex === 1){
-            matchesOwned = relicInfo.isOwned === true;
-        } else if (ownedIndex === 2){
-            matchesOwned = relicInfo.isOwned === false;
-        } else {
-            matchesOwned = true;
-        }
-
-        if (vaultedIndex === 1){
-            matchesVaulted = relicInfo.vaulted === true;
-
-            return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
-        } else if (vaultedIndex === 2){
-            matchesVaulted = relicInfo.vaulted === false;
-
-            return matchesTier && matchesVaulted && matchesQuery && matchesOwned;
-        } else {
-            return matchesTier && matchesQuery && matchesOwned;
-        }
-        
-    });
-
+    
+    
+    
     const sortedAndFilteredRelics = [...filteredRelics].sort((a, b) => {
         const relicA = a[1];
         const relicB = b[1];
@@ -101,10 +110,6 @@ export const RelicsPage = () => {
         return 0;
     });
     
-    // const handleSearchQuery = (e) => {
-    //     setQuery(e.target.value);
-    //     console.log(searchQuery);        
-    // }
     return (
         <div>
             <RelicSearchBar onChange = {setQuery}/>
@@ -156,4 +161,30 @@ export const RelicsPage = () => {
             </div>
         </div>
     )
+}
+
+function hasSubstringDeep(obj, searchQuery) {
+    if (obj === null || typeof obj !== 'object') {
+        return false;
+    }
+
+    for (const key of Object.keys(obj)) {
+        if (key.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return true;
+        }
+
+        const value = obj[key];
+        if (
+        (typeof value === 'string' || typeof value === 'number') &&
+        String(value).toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+        return true;
+        }
+
+        if (hasSubstringDeep(value, searchQuery)) {
+        return true;
+        }
+    }
+
+    return false;
 }

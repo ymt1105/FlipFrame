@@ -56,17 +56,17 @@ export const RelicCard = ({relic}) => {
                         <div>
                             <ul>
                                 {commonDropsArray.map(common => {
-                                    return (<li>
+                                    return (<li key = {common[0]}>
                                         <p>🥉{common[0]}: {common[1].toFixed(2)}p</p>
                                     </li>);
                                 })}
                                 {uncommonDropsArray.map(uncommon => {
-                                    return (<li>
+                                    return (<li key = {uncommon[0]}>
                                         <p>🥈{uncommon[0]}: {uncommon[1].toFixed(2)}p</p>
                                     </li>);
                                 })}
                                 {rareDropsArray.map(rare => {
-                                    return (<li>
+                                    return (<li key = {rare[0]}>
                                         <p>🥇{rare[0]}: {rare[1].toFixed(2)}p</p>
                                     </li>);
                                 })}

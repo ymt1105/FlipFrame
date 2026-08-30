@@ -1,7 +1,7 @@
 import { getLookup } from "../../services/api";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 export const RelicSearchBar = ({onChange}) => {
+    const searchTimerRef = useRef(null);
     const [lookupData, setLookupData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
@@ -10,9 +10,6 @@ export const RelicSearchBar = ({onChange}) => {
     const [formData, setFormData] = useState({
         input: ""
     });
-
-    const navigate = useNavigate();
-
     useEffect(() => {
         const fetchLookup = async () => {
             try {
@@ -34,25 +31,31 @@ export const RelicSearchBar = ({onChange}) => {
             ...prev,
             [name]: value
         }));
-
-        if (value.trim().length > 0 && lookupData) {
-            //Get only relics or prime parts
-            const regex = /\bPrime\b/
-            const searchItems = Object.values(lookupData).filter((item) => item[0].includes("Relic") || (regex.test(item[0]) && !(item[0].includes("Set"))));
-            const filteredMatches = searchItems.filter(([itemName]) => {
-                return itemName.toLowerCase().includes(value.toLowerCase());
-            });
-            
-            setSuggestions(filteredMatches.slice(0, 8));
-            setShowDropdown(true);
-            setFocusedIndex(-1);
-        } else {
-            setSuggestions([]);
-            setShowDropdown(false);
-            setFocusedIndex(-1);
+        if (searchTimerRef.current) {
+            clearTimeout(searchTimerRef.current);
         }
+        searchTimerRef.current = setTimeout(() => {
+            onChange(value);
+            if (value.trim().length > 0 && lookupData) {
+                //Get only relics or prime parts
+                const regex = /\bPrime\b/
+                const searchItems = Object.values(lookupData).filter((item) => item[0].includes("Relic") || (regex.test(item[0]) && !(item[0].includes("Set"))));
+                
+                
+                const filteredMatches = searchItems.filter(([itemName]) => {
+                    return itemName.toLowerCase().includes(value.toLowerCase());
+                });
+                
+                setSuggestions(filteredMatches.slice(0, 8));
+                setShowDropdown(true);
+                setFocusedIndex(-1);
+            } else {
+                setSuggestions([]);
+                setShowDropdown(false);
+                setFocusedIndex(-1);
+            }
+        }, 100);
     };
-
     const handleSelectSuggestion = (itemName) => {
         setFormData({ input: itemName });
         setSuggestions([]);
