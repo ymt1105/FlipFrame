@@ -139,9 +139,10 @@ async function getRelicContents(relicName){
 */
 async function getFormattedDate(offset){
     const now = new Date();
+    now.setDate(now.getDate() - 1 - offset);
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate() - 1 - offset).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 /*
