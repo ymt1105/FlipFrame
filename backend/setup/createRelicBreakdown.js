@@ -233,7 +233,6 @@ async function getRelicDropsFromRewards(relicRewards){
         const itemName = stage.item.name;
         const itemPrice = await lookupPrice(itemName) || 0;
         const rawChance = stage.chance;
-
         let tier = 'Common';
         if (rawChance <= 5.0) {
             tier = 'Rare';
@@ -242,6 +241,11 @@ async function getRelicDropsFromRewards(relicRewards){
         }
 
         dropsPrices[tier][itemName] = itemPrice;
+        // dropsPrices[tier][itemName] = {
+        //     itemPrice
+        // };
+
+
     }
     return dropsPrices;
 }

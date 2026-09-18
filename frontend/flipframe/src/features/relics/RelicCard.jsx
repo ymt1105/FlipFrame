@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-export const RelicCard = ({relic}) => {
+export const RelicCard = ({relic, squad, chance = {}}) => {
     const navigate = useNavigate();
     const relicName = relic[0];
     const relicInfo = relic[1];
@@ -14,8 +14,16 @@ export const RelicCard = ({relic}) => {
         setIsModalOpen(false);
     }
     const commonDropsArray = Object.entries(relicInfo.drops.Common);
-    const uncommonDropsArray = Object.entries(relicInfo.drops.Uncommon);
+    const uncommonDropsArray = Object.entries(relicInfo.drops.Uncommon);    
     const rareDropsArray = Object.entries(relicInfo.drops.Rare);
+    const totalSumCommon = commonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
+    const totalSumUncommon = uncommonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
+    const totalSumRare = rareDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
+    // expected value for the rarities
+    const EVcommon =  (1 - (1 - chance.Common) ** squad)*((totalSumCommon)/Object.keys(commonDropsArray).length) ;
+    const EVuncommon = (1 - (1 - chance.Uncommon) ** squad)*((totalSumUncommon )/ Object.keys(uncommonDropsArray).length) 
+    const EVrare = (1 - (1 - chance.Rare) ** squad)*((totalSumRare)/Object.keys(rareDropsArray).length) 
+    const summedEV = EVcommon + EVuncommon + EVrare;
     return (
         
         <div className = {`border m-2 p-2 ${
@@ -34,6 +42,8 @@ export const RelicCard = ({relic}) => {
                     {relicName}
                 </h2>
                 <p>Vaulted: {relicInfo.vaulted ? "Yes" : "No"}</p>
+                <p>Expected Value: {summedEV.toFixed(2)}p</p>
+
                 <p>{relicInfo.Intact.quantity}x Intact: {relicInfo.Intact.price.toFixed(2)}</p>
                 <p>{relicInfo.Exceptional.quantity}x Exceptional: {relicInfo.Exceptional.price.toFixed(2)}</p>
                 <p>{relicInfo.Flawless.quantity}x Flawless: {relicInfo.Flawless.price.toFixed(2)}</p>

@@ -8,7 +8,8 @@ export const RelicsPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setQuery] = useState("");
     const [selectedTier, setSelectedTier] = useState("");
-    const [selectedRefinement, setSelectedRefinement] = useState("");
+    const [selectedRefinement, setSelectedRefinement] = useState("Intact");
+    const [selectedSquadSize, setSelectedSquadSize] = useState(1);
     const [vaultedIndex, setVaultedIndex] = useState(0);
     const [ownedIndex, setOwnedIndex] = useState(0);
     const [sortingOrder, setSortingOrder] = useState("dscRad")
@@ -16,6 +17,29 @@ export const RelicsPage = () => {
         queryKey: ["relics"],
         queryFn: getAllRelics
     })
+
+    const refinementChances = {
+        'Intact' : {
+            'Common' : 0.2533,
+            'Uncommon' : 0.11,
+            'Rare' : 0.02
+        },
+        'Exceptional' : {
+            'Common' : 0.2333,
+            'Uncommon' : 0.13,
+            'Rare' : 0.04
+        },
+        'Flawless' : {
+            'Common' : 0.2,
+            'Uncommon' : 0.17,
+            'Rare' : 0.06
+        },
+        'Radiant' : {
+            'Common' : 0.1667,
+            'Uncommon' : 0.20,
+            'Rare' : 0.1
+        }
+    };
     const vaultedStates = [
         { label: 'All', color: 'bg-indigo-300' },
         { label: 'Vaulted', color: 'bg-green-300' },
@@ -69,7 +93,7 @@ export const RelicsPage = () => {
                 return matchesTier && matchesQuery && matchesOwned;
             }
         });
-    }, [relicData, searchQuery, selectedTier, selectedRefinement, vaultedIndex, ownedIndex]);
+    }, [relicData, searchQuery, selectedTier, selectedRefinement, selectedSquadSize, vaultedIndex, ownedIndex]);
 
 
     if (isLoading) return <div>Loading...</div>;
@@ -86,7 +110,10 @@ export const RelicsPage = () => {
     }
     
     
-    
+    // P(1rare) = 1-((1-0.1)^4) one rare from 4 radiants
+    // Probability of getting 1 x is P(1i) = 1 - ((1-P(item_probability)^t)) where t is the amount of teammates
+    // E(relicRadiant) = P(1c) * ((item_c1 + item_c2 + item_c3)/length_common) + P(1u) * ((item_u1 + item_u2)/length_uncommon) + * P(1r) * (item_r1)
+
     const sortedAndFilteredRelics = [...filteredRelics].sort((a, b) => {
         const relicA = a[1];
         const relicB = b[1];
@@ -128,6 +155,12 @@ export const RelicsPage = () => {
                     <option value="Flawless">Flawless</option>
                     <option value="Radiant">Radiant</option>
                 </select>
+                <select id="squad-select" value={selectedSquadSize} onChange={(e) => setSelectedSquadSize(e.target.value)}>
+                    <option value="1">1 Players</option>
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                    <option value="4">4 Players</option>
+                </select>
                 {/* Less than or greater than filter */}
 
                 <select id="tier-select" value={sortingOrder} onChange={(e) => setSortingOrder(e.target.value)}>
@@ -155,7 +188,7 @@ export const RelicsPage = () => {
             <div className="grid grid-cols-5">
                 {Object.entries(sortedAndFilteredRelics).map(relic => {
                     return (
-                        <RelicCard relic = {relic[1]} key = {relic[0]}/>
+                        <RelicCard relic = {relic[1]} key = {relic[0]} squad = {selectedSquadSize} chance={refinementChances[selectedRefinement]}/>
                     );
                 })}
             </div>

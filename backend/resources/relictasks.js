@@ -6,13 +6,6 @@ try {
 } catch {
     console.warn("relicPriceLookup.json not found. Using default empty object.");
 }
-
-try {
-    allRelicsLookup = (await import('../jsons/allRelicPriceLookup.json', { with: { type: 'json' } })).default;
-} catch {
-    console.warn("allRelicPriceLookup.json not found.");
-}
-
 export async function getAllMyRelics(){
     const data = myRelicLookup;
     return data;

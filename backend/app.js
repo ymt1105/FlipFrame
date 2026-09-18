@@ -61,7 +61,20 @@ router.route('/relics/:relicName')
 app.use('/api', router);
 app.use(router);
 
+
+
+
+
 const PORT = 3000
+
+function runRecursive() {
+    const request = fetch(`http://localhost:${PORT}/orders/bump`, { method: 'POST' });
+
+    setTimeout(runRecursive, 180000);
+}
+runRecursive();
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 })
+
+
