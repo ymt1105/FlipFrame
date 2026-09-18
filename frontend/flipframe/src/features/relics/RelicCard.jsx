@@ -16,9 +16,9 @@ export const RelicCard = ({relic, squad, chance = {}}) => {
     const commonDropsArray = Object.entries(relicInfo.drops.Common);
     const uncommonDropsArray = Object.entries(relicInfo.drops.Uncommon);    
     const rareDropsArray = Object.entries(relicInfo.drops.Rare);
-    const totalSumCommon = commonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
-    const totalSumUncommon = uncommonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
-    const totalSumRare = rareDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1], 0);
+    const totalSumCommon = commonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1].price, 0);
+    const totalSumUncommon = uncommonDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1].price, 0);
+    const totalSumRare = rareDropsArray.reduce((accumulator, currentValue) => accumulator + currentValue[1].price, 0);
     // expected value for the rarities
     const EVcommon =  (1 - (1 - chance.Common) ** squad)*((totalSumCommon)/Object.keys(commonDropsArray).length) ;
     const EVuncommon = (1 - (1 - chance.Uncommon) ** squad)*((totalSumUncommon )/ Object.keys(uncommonDropsArray).length) 
@@ -43,7 +43,6 @@ export const RelicCard = ({relic, squad, chance = {}}) => {
                 </h2>
                 <p>Vaulted: {relicInfo.vaulted ? "Yes" : "No"}</p>
                 <p>Expected Value: {summedEV.toFixed(2)}p</p>
-
                 <p>{relicInfo.Intact.quantity}x Intact: {relicInfo.Intact.price.toFixed(2)}</p>
                 <p>{relicInfo.Exceptional.quantity}x Exceptional: {relicInfo.Exceptional.price.toFixed(2)}</p>
                 <p>{relicInfo.Flawless.quantity}x Flawless: {relicInfo.Flawless.price.toFixed(2)}</p>
@@ -67,17 +66,17 @@ export const RelicCard = ({relic, squad, chance = {}}) => {
                             <ul>
                                 {commonDropsArray.map(common => {
                                     return (<li key = {common[0]}>
-                                        <p>🥉{common[0]}: {common[1].toFixed(2)}p</p>
+                                        <p>🥉{common[0]}: {common[1].price.toFixed(2)}p {common[1].ducats}d</p>
                                     </li>);
                                 })}
                                 {uncommonDropsArray.map(uncommon => {
                                     return (<li key = {uncommon[0]}>
-                                        <p>🥈{uncommon[0]}: {uncommon[1].toFixed(2)}p</p>
+                                        <p>🥈{uncommon[0]}: {uncommon[1].price.toFixed(2)}p {uncommon[1].ducats}d</p>
                                     </li>);
                                 })}
                                 {rareDropsArray.map(rare => {
                                     return (<li key = {rare[0]}>
-                                        <p>🥇{rare[0]}: {rare[1].toFixed(2)}p</p>
+                                        <p>🥇{rare[0]}: {rare[1].price.toFixed(2)}p {rare[1].ducats}d</p>
                                     </li>);
                                 })}
                             </ul>

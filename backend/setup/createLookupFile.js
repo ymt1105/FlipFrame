@@ -13,6 +13,7 @@ async function createLookupFile(){
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }
         const lookupJson = {};
+        const ducatsJson = {};
         for (const item of Object.values(responseJson.data)){
             const itemName = item.i18n.en.name;
             const itemID = item.id
@@ -24,15 +25,25 @@ async function createLookupFile(){
             lookupJson[itemID] = [itemName, itemSlug, [tags], itemIcon, itemThumb];
             
         }
+        for (const item of Object.values(responseJson.data)){
+            const itemName = item.i18n.en.name;
+            const ducats = item.ducats || 0;
+            ducatsJson[itemName] = ducats;
+        }
         const jsonString = JSON.stringify(lookupJson, null, 2);
+        const jsonDucats = JSON.stringify(ducatsJson, null, 2);
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
 
         const filePath = path.join(__dirname, '..', 'jsons', 'itemLookup.json');
+        const ducatsPath = path.join(__dirname, '..', 'jsons', 'ducatsLookup.json');
+
         const dirPath = path.dirname(filePath);
         
         await mkdir(dirPath, { recursive: true }); 
         await writeFile(filePath, jsonString , 'utf8');
+        await writeFile(ducatsPath, jsonDucats , 'utf8');
+
         console.log("Successfully created lookup file");
     } catch (err) {
         console.error("Operation failed:", err.message);    

@@ -1,11 +1,9 @@
 import 'dotenv/config';
 import { config } from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { writeOutJSONFile } from '../helper/writeOutJSONFile.js';
-import readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import ducatsLookup from '../jsons/ducatsLookup.json' with { type: 'json' };
 
 //TODO: NEED TO ADD CACHING TO SPEED UP RUNNING THE FUNCTION
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -207,14 +205,15 @@ async function lookupPrice(itemName){
 async function calculateRelicValue(drops, refinementName){
     const unpackedItems = Object.entries(drops).flatMap(([tier, items]) => {
         return Object.entries(items).map(([itemName, price]) => {
-            return { tier, itemName, price };
+            const correctedPrice = price.price;
+            return { tier, itemName, correctedPrice };
         });
     });
     
     const weightedPrices = unpackedItems.map((item) => {
         const chances = refinementChances[refinementName];
         const chance = chances[item.tier] || 0;
-        return chance * item.price;
+        return chance * item.correctedPrice;
     });
     
     const total = weightedPrices.reduce((accumulator, currentNumber) => accumulator + currentNumber, 0);    
@@ -233,17 +232,17 @@ async function getRelicDropsFromRewards(relicRewards){
         const itemName = stage.item.name;
         const itemPrice = await lookupPrice(itemName) || 0;
         const rawChance = stage.chance;
+        const ducats = ducatsLookup[itemName] || 0;
         let tier = 'Common';
         if (rawChance <= 5.0) {
             tier = 'Rare';
         } else if (rawChance <= 15.0) {
             tier = 'Uncommon';
         }
-
-        dropsPrices[tier][itemName] = itemPrice;
-        // dropsPrices[tier][itemName] = {
-        //     itemPrice
-        // };
+        dropsPrices[tier][itemName] = {
+            price : itemPrice,
+            ducats : ducats
+        };
 
 
     }
@@ -351,11 +350,9 @@ async function sortRelicData(relicBreakdown){
 }
 
 
-async function askQuestion() {
 
-    console.log("getting data for your relics...")
-    await createRelicBreakdown();
-}
-await askQuestion();
+console.log("getting data for your relics...")
+await createRelicBreakdown();
+
 
 console.timeEnd('Setup Duration');

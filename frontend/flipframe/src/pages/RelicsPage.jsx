@@ -140,7 +140,7 @@ export const RelicsPage = () => {
     return (
         <div>
             <RelicSearchBar onChange = {setQuery}/>
-            <div className="grid grid-cols-6">
+            <div className="grid grid-cols-7">
                 <select id="tier-select" value={selectedTier} onChange={(e) => setSelectedTier(e.target.value)}>
                     <option value="">Unsorted</option>
                     <option value="Lith">Lith</option>
