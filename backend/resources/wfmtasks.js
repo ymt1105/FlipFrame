@@ -3,9 +3,7 @@ import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { sleep } from '../helper/sleep.js';
-import { writeFile } from 'node:fs/promises';
 import itemLookup from '../jsons/itemLookup.json' with { type: 'json' };
-import { matchLookup } from '../helper/matchLookup.js';
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
