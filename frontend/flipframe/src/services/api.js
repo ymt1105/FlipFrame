@@ -23,14 +23,14 @@ export async function lookupItemArray(itemArray) {
     return handleResponse(response, "Failed to lookup item array");
 }
 
-export async function getItemOrders(input) {
+export async function getItemInfo(input) {
     const slug = typeof input === 'object' ? input.slug : input;
-    const response = await fetch(`${API_URL}/items/${slug}/orders`);
+    const response = await fetch(`${API_URL}/items/${slug}`);
     return handleResponse(response, "Failed to fetch item orders");
 }
 
 export async function getOrdersOnItem(slug) {
-    const response = await fetch(`${API_URL}/items/${slug}/orders/top?rank=0`);
+    const response = await fetch(`${API_URL}/items/${slug}/orders`);
     return handleResponse(response, "Failed to fetch top orders for item");
 }
 

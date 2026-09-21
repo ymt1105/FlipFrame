@@ -12,7 +12,7 @@ export const RelicsPage = () => {
     const [selectedSquadSize, setSelectedSquadSize] = useState(1);
     const [vaultedIndex, setVaultedIndex] = useState(0);
     const [ownedIndex, setOwnedIndex] = useState(0);
-    const [sortingOrder, setSortingOrder] = useState("dscRad")
+    const [sortingOrder, setSortingOrder] = useState("")
     const {data: relics, isLoading} = useQuery({
         queryKey: ["relics"],
         queryFn: getAllRelics
@@ -108,33 +108,15 @@ export const RelicsPage = () => {
     const handleOwnedToggle = () => {
         setOwnedIndex((prevIndex) => (prevIndex + 1) % ownedStates.length);
     }
-    
-    
-    // P(1rare) = 1-((1-0.1)^4) one rare from 4 radiants
-    // Probability of getting 1 x is P(1i) = 1 - ((1-P(item_probability)^t)) where t is the amount of teammates
-    // E(relicRadiant) = P(1c) * ((item_c1 + item_c2 + item_c3)/length_common) + P(1u) * ((item_u1 + item_u2)/length_uncommon) + * P(1r) * (item_r1)
-
     const sortedAndFilteredRelics = [...filteredRelics].sort((a, b) => {
         const relicA = a[1];
         const relicB = b[1];
-        if (sortingOrder === "ascRad") {
-            if (selectedRefinement == ""){
-                return relicA.Radiant.price - relicB.Radiant.price;
-            } else {
-                return relicA[selectedRefinement].price - relicB[selectedRefinement].price;
-            }
-        } else if (sortingOrder === "dscRad") {
-            if (selectedRefinement == ""){
-                return relicB.Radiant.price - relicA.Radiant.price;
-            } else {
-                return relicB[selectedRefinement].price - relicA[selectedRefinement].price;
-            }
-        } else if (sortingOrder === "ascDiff") {
+        if (sortingOrder === "ascDiff") {
             return relicA.upgradeDiff - relicB.upgradeDiff;
         } else if (sortingOrder === "dscDiff") {
             return relicB.upgradeDiff - relicA.upgradeDiff;
         }
-        return 0;
+        return relicB[selectedRefinement].price - relicA[selectedRefinement].price || 0;
     });
     
     return (
@@ -164,11 +146,11 @@ export const RelicsPage = () => {
                 {/* Less than or greater than filter */}
 
                 <select id="tier-select" value={sortingOrder} onChange={(e) => setSortingOrder(e.target.value)}>
-                    <option value="dscRad">Descending Radiant</option>
-                    <option value="ascRad">Ascending Radiant</option>  
+                    {/* <option value="dscRad">Descending Radiant</option>
+                    <option value="ascRad">Ascending Radiant</option>   */}
                     <option value="dscDiff">Descending Difference</option>
                     <option value="ascDiff">Ascending Difference</option>  
-                    <option value="uns">Unsorted</option>
+                    <option value="">Unsorted</option>
                 </select>
                 <GeneralButton onClickMethod={handleVaultedToggle} className = {currentVaultedState.color} displayLabel={currentVaultedState.label}></GeneralButton>
                 <GeneralButton onClickMethod={handleOwnedToggle} className = {currentOwnedState.color} displayLabel={currentOwnedState.label}></GeneralButton>
