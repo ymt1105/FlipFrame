@@ -161,9 +161,10 @@ export async function editOrder(payload, orderid){
 
 export async function getItemData(slug){
     try {
-        const modifiedURL = `${baseURL}/item/${slug}`;
+        const modifiedURL = `${baseURL}/items/${slug}`;
         const response = await fetch(modifiedURL);
         const responseJson = await response.json();
+        console.log(response);
         if (!response.ok) {
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }
@@ -215,6 +216,20 @@ export async function getTopOrdersOnRank(item_slug, rank){
         const response = await fetch(
             `https://api.warframe.market/v2/orders/item/${item_slug}/top/?rank=${rank}`);
         const responseJson = await response.json();
+        if (!response.ok) {
+            throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
+        }
+        return responseJson
+    } catch (err){
+        console.error("Operation failed:", err.message);    
+    }
+}
+
+export async function getOrdersOnItem(item_slug){
+    try {
+        const response = await fetch(`${baseURL}/orders/item/${item_slug}`);
+        const responseJson = await response.json();
+        console.log(responseJson);
         if (!response.ok) {
             throw new Error(`API Error: ${JSON.stringify(responseJson)}`);
         }

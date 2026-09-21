@@ -19,7 +19,7 @@ router.route('/orders/maximise')
 
 //order endpoints
 router.route('/orders')
-    .get(control.fetchAllOrders)
+    .get(control.fetchAllCurrentUserOrders)
     .post(control.newOrder)
     .delete(control.deleteAllCurrentUserOrders);
 
@@ -36,10 +36,10 @@ router.route('/items/:slug')
     .get(control.itemSearch);
 
 router.route('/items/:slug/orders')
-    .get(control.retreiveOrdersOnItem);
+    .get(control.retrieveOrdersOnItem);
 
 router.route('/items/:slug/orders/top')
-    .get(control.retreiveTopOrdersItemRank);
+    .get(control.retrieveTopOrdersItemRank);
 
 //riven endpoints
 router.route('/rivens')

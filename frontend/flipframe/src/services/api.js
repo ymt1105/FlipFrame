@@ -25,7 +25,7 @@ export async function lookupItemArray(itemArray) {
 
 export async function getItemOrders(input) {
     const slug = typeof input === 'object' ? input.slug : input;
-    const response = await fetch(`${API_URL}/items/${slug}/orders`);
+    const response = await fetch(`${API_URL}/items/${slug}`);
     return handleResponse(response, "Failed to fetch item orders");
 }
 

@@ -21,7 +21,7 @@ async function testIfMaxRate (response){
     }
     return response
 }
-export async function fetchAllOrders (req, res) {
+export async function fetchAllCurrentUserOrders (req, res) {
     try {
         const data = await task.getAllCurrentUserOrders();
         res.json(data);
@@ -92,8 +92,8 @@ export async function lookupID (req, res){
 
 export async function itemSearch (req, res){
     try {
-        const slugorname = req.params.name;
-        const data = await task.getItemData(slugorname);
+        const slug = req.params.slug;
+        const data = await task.getItemData(slug);
         res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message});
@@ -109,7 +109,7 @@ export async function bump (req, res){
     }
 }
 
-export async function retreiveOrdersOnItem (req, res){
+export async function fetchItemData (req, res){
     try{
         const slug = req.params.slug;
         const data = await task.getItemData(slug)
@@ -119,7 +119,17 @@ export async function retreiveOrdersOnItem (req, res){
     }
 }
 
-export async function retreiveTopOrdersItemRank (req, res){
+export async function retrieveOrdersOnItem (req, res){
+    try{
+        const slug = req.params.slug;
+        const data = await task.getOrdersOnItem(slug)
+        res.json(data);
+    } catch(error){
+        res.status(500).json({ error: error.message});
+    }
+}
+
+export async function retrieveTopOrdersItemRank (req, res){
     try{
         const slug = req.params.slug;
         const { rank } = req.query
