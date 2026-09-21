@@ -1,7 +1,7 @@
-import { getItemOrders, getOrdersOnItemRank } from "./api";
+import { getItemInfo, getOrdersOnItemRank } from "./api";
 
 export async function getItemData (slug, rank = 0){
-    const itemResponse = await getItemOrders(slug);
+    const itemResponse = await getItemInfo(slug);
     const info = itemResponse?.data;
     let response = ""
     let maxRank = 0;

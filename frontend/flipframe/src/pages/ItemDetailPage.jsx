@@ -6,9 +6,8 @@ import { useHoldings } from "../context/HoldingsContext"
 import { useWatchlist } from "../context/WatchlistContext";
 import { Top5OrderBook } from "../features/orders/Top5OrderBook";
 import { getItemData } from "../services/itemdata";
-import { RankSelect } from "../features/ui/RankSelect";
 import { NewOrderForm } from "../features/orders/NewOrderForm";
-import { addOrder } from "../services/api";
+import { addOrder, getAllOrders, getOrdersOnItem } from "../services/api";
 import { GeneralButton } from "../components/GeneralButton"
 
 export const ItemDetailPage = () => {
@@ -19,14 +18,20 @@ export const ItemDetailPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-    const {data : itemResponse, isLoading} = useQuery({
+    const {data : itemResponse, isLoading : isItemLoading} = useQuery({
         queryKey: ["item", slug],
         queryFn: () => getItemData(slug)
     });
 
-    if (isLoading) return <div>Loading...</div>;
+     const {data : orderResponse, isLoading : isOrderLoading} = useQuery({
+        queryKey: ["order", slug],
+        queryFn: () => getOrdersOnItem(slug)
+    });
 
-    
+    if (isItemLoading) return <div>Loading...</div>;
+    if (isOrderLoading) return <div>Loading...</div>;
+
+
     const handleAddToWatchlist = (e) => {
         e.preventDefault();
         addWatchlist(slug);
